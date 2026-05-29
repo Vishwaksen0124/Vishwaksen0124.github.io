@@ -115,16 +115,18 @@ function renderSkills() {
     </div>`).join("");
 }
 
-/* ---------- theme toggle ---------- */
+/* ---------- theme toggle (dawn ☀ / dusk ☾) ---------- */
 function initTheme() {
   const toggle = document.getElementById("theme-toggle");
-  const saved = localStorage.getItem("theme");
-  if (saved) document.documentElement.setAttribute("data-theme", saved);
-  toggle.addEventListener("click", () => {
-    const cur = document.documentElement.getAttribute("data-theme");
-    const next = cur === "light" ? "" : "light";
-    if (next) document.documentElement.setAttribute("data-theme", next);
+  const apply = (mode) => {
+    if (mode === "dusk") document.documentElement.setAttribute("data-theme", "dusk");
     else document.documentElement.removeAttribute("data-theme");
+    toggle.textContent = mode === "dusk" ? "☾" : "☀";
+  };
+  apply(localStorage.getItem("theme") || "dawn");
+  toggle.addEventListener("click", () => {
+    const next = document.documentElement.getAttribute("data-theme") === "dusk" ? "dawn" : "dusk";
+    apply(next);
     localStorage.setItem("theme", next);
   });
 }

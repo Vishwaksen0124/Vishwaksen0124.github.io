@@ -15,11 +15,20 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%23ffd6c4'/><circle cx='62' cy='42' r='30' fill='%23d9c9ff' opacity='.8'/><circle cx='40' cy='60' r='24' fill='%23bfecd8' opacity='.85'/></svg>" />
 </head>
 <body>
+  <!-- ============ ATMOSPHERE ============ -->
+  <div class="atmosphere" aria-hidden="true">
+    <span class="blob blob--peach"></span>
+    <span class="blob blob--lilac"></span>
+    <span class="blob blob--mint"></span>
+    <span class="blob blob--sky"></span>
+  </div>
+  <div class="grain" aria-hidden="true"></div>
+
   <!-- ============ NAV ============ -->
   <header class="nav" id="nav">
     <a href="#top" class="nav__brand">VP<span class="dot">.</span></a>
@@ -31,7 +40,7 @@
       <a href="#contact">Contact</a>
     </nav>
     <a href="resume.pdf" class="btn btn--ghost nav__cta" target="_blank" rel="noopener">Résumé</a>
-    <button class="nav__toggle" id="theme-toggle" aria-label="Toggle theme">◐</button>
+    <button class="nav__toggle" id="theme-toggle" aria-label="Toggle theme">☀</button>
   </header>
 
   <main id="top">
