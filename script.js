@@ -77,11 +77,13 @@ function renderWorks() {
 }
 
 function initReveal() {
-  const els = document.querySelectorAll(".section, .role-row, .work-card");
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const els = document.querySelectorAll(".sec-head, .about, .role-row, .work-card, .exp, .contact__lead, .contact__email, .contact__row");
   els.forEach((e) => e.classList.add("reveal"));
+  // re-animate every time an element enters/leaves the viewport
   const io = new IntersectionObserver((ents) => {
-    ents.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
-  }, { threshold: 0.12 });
+    ents.forEach((e) => e.target.classList.toggle("in", e.isIntersecting));
+  }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
   els.forEach((e) => io.observe(e));
 }
 

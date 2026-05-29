@@ -156,8 +156,14 @@ main { width: 100%; }
 .foot span:last-child { margin-left: auto; }
 
 /* ---------- REVEAL ---------- */
-.reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s var(--ease); }
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s var(--ease); }
 .reveal.in { opacity: 1; transform: none; }
+/* subtle stagger across grid/list items */
+.work-card:nth-child(2), .role-row:nth-child(2) { transition-delay: .06s; }
+.work-card:nth-child(3), .role-row:nth-child(3) { transition-delay: .12s; }
+.work-card:nth-child(4), .role-row:nth-child(4) { transition-delay: .06s; }
+.work-card:nth-child(5), .role-row:nth-child(5) { transition-delay: .12s; }
+.work-card:nth-child(6), .role-row:nth-child(6) { transition-delay: .18s; }
 .hero > * { animation: rise .8s var(--ease) backwards; }
 .hero__name { animation-delay: .06s; } .hero__lower { animation-delay: .14s; }
 @keyframes rise { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: none; } }
