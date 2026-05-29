@@ -85,9 +85,9 @@ main { width: 100%; }
 .hero { padding-top: clamp(6.5rem, 15vh, 9rem); padding-bottom: 3rem; }
 .hero__eyebrow { font-family: var(--mono); font-size: .9rem; color: var(--accent); margin-bottom: 1.4rem; }
 .hero__name { font-family: var(--disp); font-weight: 800; font-size: clamp(2.8rem, 8.5vw, 5.4rem); line-height: .96; letter-spacing: -.035em; color: var(--ink); margin-bottom: 2.2rem; }
-.hero__lower { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, 220px); gap: clamp(1.8rem, 4vw, 3.5rem); align-items: center; }
+.hero__lower { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 185px); gap: clamp(1.8rem, 4vw, 3.5rem); align-items: center; }
 .hero__photo-wrap { display: flex; justify-content: flex-end; align-items: center; }
-.hero__photo { width: 100%; max-width: 220px; height: 165px; align-self: center; object-fit: cover; object-position: 50% 32%; border-radius: 16px; border: 1px solid var(--line); filter: grayscale(.25) contrast(1.02); transition: filter .4s ease, transform .4s var(--ease); }
+.hero__photo { width: 100%; max-width: 170px; height: 220px; align-self: center; object-fit: cover; object-position: 50% 30%; border-radius: 16px; border: 1px solid var(--line); filter: grayscale(.25) contrast(1.02); transition: filter .4s ease, transform .4s var(--ease); }
 .hero__photo:hover { filter: none; transform: translateY(-4px); }
 .hero__tagline { font-family: var(--disp); font-weight: 600; font-size: clamp(1.35rem, 2.6vw, 1.9rem); line-height: 1.22; letter-spacing: -.015em; color: var(--ink); margin-bottom: 1.4rem; }
 .hero__intro { font-size: 1.1rem; max-width: 52ch; margin-bottom: 2.2rem; }
@@ -182,7 +182,7 @@ main { width: 100%; }
   .nav__links { display: none; }
   .hero__lower { grid-template-columns: 1fr; gap: 2rem; }
   .hero__photo-wrap { justify-content: flex-start; }
-  .hero__photo { max-width: 220px; height: 150px; }
+  .hero__photo { max-width: 170px; height: 220px; }
   .about { grid-template-columns: 1fr; gap: 2rem; }
   .about__side { position: static; max-width: 320px; }
   .role-row { grid-template-columns: 1fr; gap: .6rem; }
