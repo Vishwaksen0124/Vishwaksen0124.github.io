@@ -119,6 +119,15 @@ main { width: 100%; }
 .role-body p { margin-bottom: .7rem; }
 .role-tools { font-family: var(--mono); font-size: .78rem; color: var(--faint); }
 
+/* ---------- SKILLS ---------- */
+.skills { display: flex; flex-direction: column; }
+.skill-group { display: grid; grid-template-columns: 190px 1fr; gap: 1rem 2rem; padding: 1.3rem 0; border-top: 1px solid var(--line); align-items: baseline; }
+.skills .skill-group:first-child { border-top: none; }
+.skill-group__label { font-family: var(--mono); font-size: .8rem; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; }
+.skill-group__chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+.chip { font-family: var(--mono); font-size: .8rem; color: var(--dim); border: 1px solid var(--line); border-radius: 8px; padding: .32rem .7rem; transition: color .2s, border-color .2s, transform .2s var(--ease); }
+.chip:hover { color: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
+
 /* ---------- WORK ---------- */
 .work { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
 .work-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.6rem; display: flex; flex-direction: column; min-height: 200px; position: relative; transition: transform .3s var(--ease), border-color .3s; }
@@ -177,6 +186,7 @@ main { width: 100%; }
   .about { grid-template-columns: 1fr; gap: 2rem; }
   .about__side { position: static; max-width: 320px; }
   .role-row { grid-template-columns: 1fr; gap: .6rem; }
+  .skill-group { grid-template-columns: 1fr; gap: .6rem; }
   .work { grid-template-columns: 1fr; }
   .exp { padding: 1.6rem; }
 }

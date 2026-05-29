@@ -44,6 +44,24 @@ const WORKS = [
     stack: "Python · NLP · LLM" }
 ];
 
+const SKILLS = [
+  ["Languages", ["Python", "TypeScript", "JavaScript", "SQL", "Rust", "Bash"]],
+  ["Backend", ["FastAPI", "Node.js", "REST APIs", "WebSockets", "Pydantic"]],
+  ["AI / LLM", ["LangChain", "LangGraph", "LangSmith", "RAG", "OpenAI", "Anthropic", "PyTorch"]],
+  ["Distributed", ["Celery", "Redis", "AWS EventBridge", "SQS", "Idempotency", "DLQs"]],
+  ["Cloud & DevOps", ["AWS", "Azure", "Docker", "Terraform", "GitHub Actions"]],
+  ["Data", ["PostgreSQL", "MongoDB", "Pandas", "Grafana", "Cohort & Funnel"]],
+  ["Frontend", ["React", "Next.js", "Streamlit"]]
+];
+
+function renderSkills() {
+  document.getElementById("skills-list").innerHTML = SKILLS.map(([group, items]) => `
+    <div class="skill-group reveal">
+      <span class="skill-group__label">${group}</span>
+      <div class="skill-group__chips">${items.map((i) => `<span class="chip">${i}</span>`).join("")}</div>
+    </div>`).join("");
+}
+
 function renderRoles() {
   document.getElementById("roles-list").innerHTML = ROLES.map((r) => `
     <div class="role-row reveal">
@@ -78,7 +96,7 @@ function renderWorks() {
 
 function initReveal() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const els = document.querySelectorAll(".sec-head, .about, .role-row, .work-card, .exp, .contact__lead, .contact__email, .contact__row");
+  const els = document.querySelectorAll(".sec-head, .about, .role-row, .skill-group, .work-card, .exp, .contact__lead, .contact__email, .contact__row");
   els.forEach((e) => e.classList.add("reveal"));
   // re-animate every time an element enters/leaves the viewport
   const io = new IntersectionObserver((ents) => {
@@ -108,6 +126,7 @@ function initNav() {
 
 document.addEventListener("DOMContentLoaded", () => {
   renderRoles();
+  renderSkills();
   renderWorks();
   initReveal();
   initTheme();
