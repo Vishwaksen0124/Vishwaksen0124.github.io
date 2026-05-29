@@ -43,9 +43,9 @@ const HATS = [
   },
   {
     role: "Operations Engineer",
-    blurb: "Automation, alerting and on-call — keeping the order pipeline alive in the real world.",
-    tools: "Python automation · Slack · CloudWatch alerts",
-    proof: "60+ orders/day across 6 platforms"
+    blurb: "Monitoring, alerting and on-call — keeping production healthy and the team unblocked.",
+    tools: "CloudWatch · Grafana alerts · Slack · runbooks",
+    proof: "killed a recurring on-call page"
   }
 ];
 
@@ -57,7 +57,7 @@ const WORKS = [
   { title: "Analytics & BI Engine", tag: "Data · production",
     desc: "The analytics layer behind the company: a daily Northstar pipeline, cohort & funnel models, and Grafana dashboards the founders rely on.",
     stack: "PLpgSQL · Python · Grafana" },
-  { title: "Order Orchestration Pipeline", tag: "Ops · production",
+  { title: "Order Orchestration Pipeline", tag: "Backend · production",
     desc: "Cart orchestration across 6 partner platforms with a retry-aware tracking ledger, wallet debits and ops-alert escalation.",
     stack: "Python · automation · Slack" },
   { title: "Cloud Infrastructure", tag: "DevOps · production",
