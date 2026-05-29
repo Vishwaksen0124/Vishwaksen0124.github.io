@@ -40,23 +40,23 @@
       </article>
 
       <article class="tile tile--metric">
-        <span class="metric__num" data-count="1552">0</span>
-        <span class="metric__label">contributions on GitHub in the past year</span>
-      </article>
-      <article class="tile tile--metric">
-        <span class="metric__num" data-count="530">0</span><span class="metric__plus">+</span>
-        <span class="metric__label">commits across the production services I work on</span>
-      </article>
-      <article class="tile tile--metric">
         <span class="metric__num" data-count="6">0</span>
         <span class="metric__label">engineering hats worn day to day</span>
       </article>
+      <article class="tile tile--metric">
+        <span class="metric__num" data-count="10">0</span><span class="metric__plus">+</span>
+        <span class="metric__label">LangGraph agents shipped to production</span>
+      </article>
+      <article class="tile tile--metric">
+        <span class="metric__num" data-count="60">0</span><span class="metric__plus">+</span>
+        <span class="metric__label">orders/day orchestrated across 6 platforms</span>
+      </article>
 
-      <a class="tile tile--feature" href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener">
-        <span class="tile__tag">Featured build</span>
-        <h2 class="feature__title">WhatsApp AI<br>Recruiting Agent</h2>
-        <p class="feature__desc">End-to-end: 3 specialized LLM agents (resume analysis, question generation, conversation), human-in-the-loop approval, a live React + Socket.IO dashboard, and Redis-backed queues — I built the backend, the AI, and the frontend. Screened 500+ candidates; closed 10 hires.</p>
-        <span class="feature__stack">Node.js · Mistral · React · Socket.IO · Redis</span>
+      <a class="tile tile--feature" href="https://creativewritingstudio.streamlit.app" target="_blank" rel="noopener">
+        <span class="tile__tag">Featured build · live</span>
+        <h2 class="feature__title">Creative Writing<br>Studio</h2>
+        <p class="feature__desc">A live multi-agent GenAI platform — Plot, Dialogue and Editor agents co-author long-form stories with FAISS retrieval over running context and Mistral generation, served publicly on Streamlit. I built the agents, the retrieval layer and the UI.</p>
+        <span class="feature__stack">LangChain · Mistral · FAISS · Streamlit</span>
         <span class="tile__arrow">↗</span>
       </a>
 
@@ -114,7 +114,7 @@
         <ul class="exp__points">
           <li><strong>Backend.</strong> Built and own the core platform — FastAPI services, the order/agent backbone behind <strong>60+ orders/day across 6 partner platforms</strong>, and a distributed async pipeline on Celery, Redis, AWS EventBridge &amp; SQS routing thousands of events/day with idempotency, backoff and dead-letter queues.</li>
           <li><strong>Data &amp; analytics.</strong> Built the analytics layer in SQL/PLpgSQL — the daily Northstar pipeline (GMV, WAU/MAU, churn-risk) auto-emailed to founders, 4 Grafana dashboards, and ad-hoc cohort/funnel analyses.</li>
-          <li><strong>AI.</strong> A Pydantic-typed, LangSmith-traced orchestration &amp; evaluation layer powering <strong>10+ LangGraph agents in production</strong>, plus the WhatsApp recruiting agent that screened 500+ candidates.</li>
+          <li><strong>AI.</strong> A Pydantic-typed, LangSmith-traced orchestration &amp; evaluation layer powering <strong>10+ LangGraph agents in production</strong>, with evaluators grading live runs across OpenAI / Anthropic / Mistral.</li>
           <li><strong>Ops &amp; automation.</strong> Monitoring, alerting and on-call across services — killed a recurring weekly on-call page by root-causing a silent browser-automation bug in the payment path, restoring alarm trust.</li>
           <li><strong>DevOps &amp; full-stack.</strong> Azure infra-as-code (Terraform), Docker &amp; GitHub Actions; React / Next.js ops dashboards consuming the services above.</li>
         </ul>
