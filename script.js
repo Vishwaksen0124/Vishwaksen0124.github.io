@@ -1,110 +1,74 @@
 /* ============================================================
-   Vishwaksen Pujala — startup-engineer portfolio
-   Content driven by real GitHub data (commit depth, languages).
+   Vishwaksen Pujala — classic portfolio interactions
    ============================================================ */
 
-const CHIPS = [
-  "Python", "TypeScript", "JavaScript", "SQL / PLpgSQL", "Go", "Rust",
-  "FastAPI", "Node.js", "LangGraph", "Celery", "Redis", "AWS", "Azure",
-  "Terraform", "Docker", "PostgreSQL", "React", "Next.js", "PyTorch", "Grafana"
+const ROLES = [
+  { name: "Backend Engineer",
+    desc: "APIs, services and the event-driven backbone everything else runs on — built for correctness under load.",
+    tools: "FastAPI · Celery · Redis · SQS · EventBridge" },
+  { name: "Data & Analytics",
+    desc: "The metrics layer behind the company: Northstar pipelines, cohort & funnel analysis, and the dashboards founders read every morning.",
+    tools: "PLpgSQL · Pandas · Grafana · BigQuery" },
+  { name: "AI / LLM Engineer",
+    desc: "Production agent orchestration with tracing, evaluation and vendor swaps across OpenAI, Anthropic and Mistral.",
+    tools: "LangGraph · LangSmith · RAG · PyTorch" },
+  { name: "DevOps / Infra",
+    desc: "Infrastructure-as-code, container builds and CI so the whole team can ship safely and often.",
+    tools: "Terraform · Azure · Docker · GitHub Actions" },
+  { name: "Full-stack",
+    desc: "Operational dashboards and user-facing apps wired straight to the services behind them.",
+    tools: "React · Next.js · TypeScript · Socket.IO" },
+  { name: "Operations",
+    desc: "Monitoring, alerting and on-call — keeping production healthy and the team unblocked.",
+    tools: "CloudWatch · Grafana alerts · Slack · runbooks" }
 ];
 
-/* the hats — each grounded in real work / commit evidence */
-const HATS = [
-  {
-    role: "Backend Engineer",
-    blurb: "APIs, services and the event-driven backbone that everything else runs on.",
-    tools: "FastAPI · Celery · Redis · SQS · EventBridge",
-    proof: "core production platform"
-  },
-  {
-    role: "Data & Analytics",
-    blurb: "Northstar metrics, cohort & funnel analysis, and the BI founders read every morning.",
-    tools: "PLpgSQL · Pandas · Grafana · BigQuery",
-    proof: "company-wide BI & analytics"
-  },
-  {
-    role: "AI / LLM Engineer",
-    blurb: "Production agent orchestration with tracing, evaluation and vendor swaps.",
-    tools: "LangGraph · LangSmith · Mistral · OpenAI · PyTorch",
-    proof: "10+ agents in production"
-  },
-  {
-    role: "DevOps / Infra",
-    blurb: "Infrastructure-as-code, container builds and CI so the team can ship safely.",
-    tools: "Terraform · Azure · Docker · GitHub Actions",
-    proof: "Azure infra-as-code"
-  },
-  {
-    role: "Full-stack",
-    blurb: "Operational dashboards and user-facing apps wired straight to the backend.",
-    tools: "React · Next.js · TypeScript · Socket.IO",
-    proof: "ops dashboards · Planity · LoveStream"
-  },
-  {
-    role: "Operations Engineer",
-    blurb: "Monitoring, alerting and on-call — keeping production healthy and the team unblocked.",
-    tools: "CloudWatch · Grafana alerts · Slack · runbooks",
-    proof: "killed a recurring on-call page"
-  }
-];
-
-/* systems & projects — private org systems shown with commit depth, OSS linked */
 const WORKS = [
-  { title: "Core Backend Platform", tag: "Backend · production",
-    desc: "The platform everything runs on — FastAPI services, the order/agent backbone, and a distributed Celery/Redis/SQS pipeline routing thousands of events a day.",
-    stack: "Python · FastAPI · Celery · AWS" },
-  { title: "Analytics & BI Engine", tag: "Data · production",
-    desc: "The analytics layer behind the company: a daily Northstar pipeline, cohort & funnel models, and Grafana dashboards the founders rely on.",
-    stack: "PLpgSQL · Python · Grafana" },
-  { title: "Order Orchestration Pipeline", tag: "Backend · production",
-    desc: "Cart orchestration across 6 partner platforms with a retry-aware tracking ledger, wallet debits and ops-alert escalation.",
-    stack: "Python · automation · Slack" },
-  { title: "Cloud Infrastructure", tag: "DevOps · production",
-    desc: "Cloud infrastructure-as-code with Terraform, plus archiving, backup and deploy automation for the platform.",
-    stack: "Terraform · Azure · Docker" },
+  { title: "Creative Writing Studio", tag: "GenAI · live", link: "https://creativewritingstudio.streamlit.app",
+    desc: "A live multi-agent writing platform — Plot, Dialogue & Editor agents co-author long-form stories with FAISS retrieval over running context and Mistral generation, served publicly on Streamlit.",
+    stack: "LangChain · Mistral · FAISS · Streamlit" },
   { title: "LoveStream", tag: "Realtime", link: "https://github.com/Vishwaksen0124/lovestream",
-    desc: "Low-latency P2P video & screen-share with system audio and live presence — WebRTC transport, Supabase Realtime sync.",
+    desc: "Low-latency peer-to-peer video & screen-share with system audio and live presence — WebRTC media transport, Supabase Realtime presence sync.",
     stack: "Next.js 16 · WebRTC · Supabase" },
   { title: "Planity", tag: "Full-stack", link: "https://github.com/Vishwaksen0124/Planity",
-    desc: "Role-based team task manager: subtasks, soft-delete/restore, real-time notifications, Redis caching, Docker Compose + CI/CD.",
+    desc: "Role-based team task manager: subtasks, soft-delete/restore, real-time notifications, Redis caching, MongoDB Atlas, Docker Compose + CI/CD.",
     stack: "React · Node.js · MongoDB · Redis" },
   { title: "Image Stitching — RDISNet", tag: "Computer vision", link: "https://github.com/Vishwaksen0124/image-stitching-rdisnet",
-    desc: "Deep-learning image stitching — dilated residual encoders plus a transformer context-fusion module for seam-free panoramas.",
+    desc: "Deep-learning image stitching — dilated residual encoders plus a transformer context-fusion module for robust, seam-free panoramas.",
     stack: "PyTorch · Transformers" },
   { title: "ChromaGene", tag: "Research", link: "",
-    desc: "A transformer inferring cell-type-specific gene expression from ATAC-seq chromatin accessibility data.",
-    stack: "PyTorch · Genomics" }
+    desc: "A transformer that infers cell-type-specific gene expression from ATAC-seq chromatin accessibility data.",
+    stack: "PyTorch · Genomics" },
+  { title: "Résumé ↔ JD Analyzer", tag: "Tool", link: "https://github.com/Vishwaksen0124/Resume-Job-JD-analyzer",
+    desc: "Scores a résumé against a job description, surfacing the gaps and keywords that matter for ATS screening.",
+    stack: "Python · NLP · LLM" }
 ];
 
-function renderChips() {
-  document.getElementById("chips").innerHTML = CHIPS.map((c) => `<span class="chip">${c}</span>`).join("");
-}
-
-function renderHats() {
-  document.getElementById("hats-grid").innerHTML = HATS.map((h) => `
-    <article class="tile hat-card reveal">
-      <h3 class="hat__role">${h.role}</h3>
-      <p class="hat__blurb">${h.blurb}</p>
-      <span class="hat__tools">${h.tools}</span>
-      <span class="hat__proof"><i></i>${h.proof}</span>
-    </article>`).join("");
+function renderRoles() {
+  document.getElementById("roles-list").innerHTML = ROLES.map((r) => `
+    <div class="role-row reveal">
+      <div class="role-name">${r.name}</div>
+      <div class="role-body">
+        <p>${r.desc}</p>
+        <span class="role-tools">${r.tools}</span>
+      </div>
+    </div>`).join("");
 }
 
 function renderWorks() {
-  const grid = document.getElementById("work-grid");
-  grid.innerHTML = WORKS.map((w) => {
+  const list = document.getElementById("work-list");
+  list.innerHTML = WORKS.map((w) => {
     const open = !!w.link;
     return `
-      <article class="tile work-card reveal${open ? " is-link" : ""}"${open ? ` data-href="${w.link}"` : ""}>
-        <span class="tile__tag">${w.tag}</span>
-        ${open ? '<span class="tile__arrow">↗</span>' : ""}
+      <article class="work-card reveal${open ? " is-link" : ""}"${open ? ` data-href="${w.link}"` : ""}>
+        ${open ? '<span class="work-card__arrow">↗</span>' : ""}
+        <span class="work-card__tag">${w.tag}</span>
         <h3>${w.title}</h3>
         <p>${w.desc}</p>
-        <span class="wc__stack">${w.stack}</span>
+        <span class="work-card__stack">${w.stack}</span>
       </article>`;
   }).join("");
-  grid.querySelectorAll(".work-card.is-link").forEach((c) => {
+  list.querySelectorAll(".work-card.is-link").forEach((c) => {
     c.addEventListener("click", (e) => {
       if (e.target.closest("a")) return;
       window.open(c.dataset.href, "_blank", "noopener");
@@ -112,43 +76,12 @@ function renderWorks() {
   });
 }
 
-function initTileGlow() {
-  document.addEventListener("pointermove", (e) => {
-    const tile = e.target.closest(".tile");
-    if (!tile) return;
-    const r = tile.getBoundingClientRect();
-    tile.style.setProperty("--mx", `${e.clientX - r.left}px`);
-    tile.style.setProperty("--my", `${e.clientY - r.top}px`);
-  }, { passive: true });
-}
-
-function initCounters() {
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const fmt = (n) => Math.round(n).toLocaleString("en-US");
-  const io = new IntersectionObserver((ents) => {
-    ents.forEach((e) => {
-      if (!e.isIntersecting) return;
-      const el = e.target, target = parseFloat(el.dataset.count);
-      if (reduce) { el.textContent = fmt(target); io.unobserve(el); return; }
-      let cur = 0; const step = target / 38;
-      const tick = () => {
-        cur += step;
-        if (cur >= target) { el.textContent = fmt(target); return; }
-        el.textContent = fmt(cur);
-        requestAnimationFrame(tick);
-      };
-      tick(); io.unobserve(el);
-    });
-  }, { threshold: 0.6 });
-  document.querySelectorAll(".metric__num").forEach((n) => io.observe(n));
-}
-
 function initReveal() {
-  const els = document.querySelectorAll(".section, .work-card, .hat-card");
+  const els = document.querySelectorAll(".section, .role-row, .work-card");
   els.forEach((e) => e.classList.add("reveal"));
   const io = new IntersectionObserver((ents) => {
     ents.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
-  }, { threshold: 0.1 });
+  }, { threshold: 0.12 });
   els.forEach((e) => io.observe(e));
 }
 
@@ -172,11 +105,8 @@ function initNav() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  renderChips();
-  renderHats();
+  renderRoles();
   renderWorks();
-  initTileGlow();
-  initCounters();
   initReveal();
   initTheme();
   initNav();

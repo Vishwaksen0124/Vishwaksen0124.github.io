@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vishwaksen Pujala — Startup Engineer (Backend · Data · Infra · AI)</title>
-  <meta name="description" content="Vishwaksen Pujala — a startup engineer who wears every hat: backend, data/analytics, DevOps, full-stack, ops and AI. Building production systems at Kookar AI." />
-  <meta property="og:title" content="Vishwaksen Pujala — Startup Engineer" />
-  <meta property="og:description" content="Wears every hat: backend, data, infra, full-stack, ops, AI. 1,500+ contributions/yr at Kookar AI." />
+  <title>Vishwaksen Pujala — Software Engineer (Backend · Data · Infra · AI)</title>
+  <meta name="description" content="Vishwaksen Pujala — a versatile software engineer who wears every hat at a startup: backend, data, infrastructure, full-stack and AI." />
+  <meta property="og:title" content="Vishwaksen Pujala — Software Engineer" />
+  <meta property="og:description" content="Backend · data · infra · full-stack · AI. Building production systems at an early-stage AI startup." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://vishwaksen0124.github.io" />
 
@@ -18,96 +18,99 @@
 </head>
 <body>
   <header class="nav" id="nav">
-    <a href="#top" class="nav__brand">Vishwaksen&nbsp;Pujala</a>
+    <a href="#top" class="nav__brand">VP<span class="accent">.</span></a>
     <nav class="nav__links">
-      <a href="#hats">What I do</a>
+      <a href="#about">About</a>
+      <a href="#roles">What I do</a>
       <a href="#work">Work</a>
       <a href="#experience">Experience</a>
       <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav__right">
       <a href="resume.pdf" target="_blank" rel="noopener" class="nav__resume">Résumé&nbsp;↗</a>
       <button id="theme-toggle" class="nav__toggle" aria-label="Toggle theme">☼</button>
-    </nav>
+    </div>
   </header>
 
   <main id="top">
-    <!-- ============ BENTO OVERVIEW ============ -->
-    <section class="bento" aria-label="Overview">
-      <article class="tile tile--id">
-        <span class="eyebrow">Startup Engineer — does whatever the product needs</span>
-        <h1 class="id__name">Vishwaksen<br>Pujala<em>✦</em></h1>
-        <p class="id__stmt">At an early-stage AI startup you don't get one job title — you get all of them. I've shipped <strong>backend, data &amp; analytics, infrastructure, full-stack and ops</strong> at <strong>Kookar&nbsp;AI</strong>, whatever the week demanded.</p>
-        <span class="pill"><i></i> Available for full-time roles</span>
-      </article>
-
-      <article class="tile tile--metric">
-        <span class="metric__num" data-count="6">0</span>
-        <span class="metric__label">engineering hats worn day to day</span>
-      </article>
-      <article class="tile tile--metric">
-        <span class="metric__num" data-count="10">0</span><span class="metric__plus">+</span>
-        <span class="metric__label">LangGraph agents shipped to production</span>
-      </article>
-      <article class="tile tile--metric">
-        <span class="metric__num" data-count="60">0</span><span class="metric__plus">+</span>
-        <span class="metric__label">orders/day orchestrated across 6 platforms</span>
-      </article>
-
-      <a class="tile tile--feature" href="https://creativewritingstudio.streamlit.app" target="_blank" rel="noopener">
-        <span class="tile__tag">Featured build · live</span>
-        <h2 class="feature__title">Creative Writing<br>Studio</h2>
-        <p class="feature__desc">A live multi-agent GenAI platform — Plot, Dialogue and Editor agents co-author long-form stories with FAISS retrieval over running context and Mistral generation, served publicly on Streamlit. I built the agents, the retrieval layer and the UI.</p>
-        <span class="feature__stack">LangChain · Mistral · FAISS · Streamlit</span>
-        <span class="tile__arrow">↗</span>
-      </a>
-
-      <article class="tile tile--stack">
-        <span class="tile__tag">Languages &amp; tools I ship in</span>
-        <div class="chips" id="chips"></div>
-      </article>
-
-      <article class="tile tile--now">
-        <span class="tile__tag">Now</span>
-        <p class="now__role">Engineer<br><strong>Kookar AI</strong></p>
-        <p class="now__edu">B.Tech CSE · IIIT Sri City ’26<br>CGPA 8.5 · Gurgaon, India</p>
-      </article>
-
-      <article class="tile tile--contact">
-        <span class="tile__tag">Elsewhere</span>
-        <ul class="contact__links">
-          <li><a href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener">GitHub <span>↗</span></a></li>
-          <li><a href="https://www.linkedin.com/in/vishwaksenpujala" target="_blank" rel="noopener">LinkedIn <span>↗</span></a></li>
-          <li><a href="mailto:vishwaksenpujala@gmail.com">Email <span>↗</span></a></li>
-        </ul>
-      </article>
-    </section>
-
-    <!-- ============ WHAT I DO (the hats) ============ -->
-    <section class="section" id="hats">
-      <div class="section__head">
-        <h2 class="section__title">Every hat at a startup</h2>
-        <span class="section__more">role chosen by the problem, not the title</span>
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <p class="hero__eyebrow">Software Engineer · Gurgaon, India</p>
+      <h1 class="hero__name">Vishwaksen Pujala</h1>
+      <p class="hero__tagline">I build the systems that keep a startup running — <span class="accent">backend, data, infrastructure, full-stack and AI.</span></p>
+      <p class="hero__intro">Final-year CS engineer at IIIT Sri City, currently shipping production software at an early-stage AI company. I take whatever part of the stack the problem needs.</p>
+      <div class="hero__cta">
+        <a href="#work" class="btn btn--primary">View my work</a>
+        <a href="resume.pdf" target="_blank" rel="noopener" class="btn btn--ghost">Download résumé</a>
       </div>
-      <div class="hats-grid" id="hats-grid"></div>
+      <div class="hero__socials">
+        <a href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/vishwaksenpujala" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="mailto:vishwaksenpujala@gmail.com">Email</a>
+      </div>
     </section>
 
-    <!-- ============ WORK / SYSTEMS ============ -->
+    <!-- ============ ABOUT ============ -->
+    <section class="section" id="about">
+      <div class="sec-head">
+        <span class="sec-num">01</span>
+        <h2 class="sec-title">About</h2>
+        <span class="sec-rule"></span>
+      </div>
+      <div class="about">
+        <div class="about__text">
+          <p>I'm a final-year Computer Science engineer at <strong>IIIT Sri City</strong> (CGPA 8.5/10), currently an engineer at an early-stage consumer-AI startup in Gurgaon.</p>
+          <p>At a small company you don't get one job title — you get all of them. Over the past year I've shipped <strong>backend services</strong>, the <strong>data &amp; analytics</strong> behind the company's metrics, <strong>cloud infrastructure</strong>, internal <strong>full-stack</strong> tools, and a fleet of <strong>production AI agents</strong> — picking up whichever hat the week demanded.</p>
+          <p>What I care about most is software that stays <em>correct under load</em>: idempotent handlers, dead-letter queues, retry-aware ledgers, traced and evaluated agents. I'm looking for full-time <strong>Software / Backend / AI Engineer</strong> roles.</p>
+          <ul class="about__facts">
+            <li><span>Education</span> B.Tech CSE · IIIT Sri City · 2022–26</li>
+            <li><span>Based in</span> Gurgaon, India</li>
+            <li><span>Focus</span> Backend · Distributed Systems · Applied AI</li>
+            <li><span>Research</span> ChromaGene — gene-expression transformer</li>
+          </ul>
+        </div>
+        <aside class="about__side">
+          <div class="about__mono">VP</div>
+          <p class="about__name">Vishwaksen Pujala</p>
+          <p class="about__role">Software Engineer</p>
+          <a class="about__resume" href="resume.pdf" target="_blank" rel="noopener">→ Read my résumé</a>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ WHAT I DO ============ -->
+    <section class="section" id="roles">
+      <div class="sec-head">
+        <span class="sec-num">02</span>
+        <h2 class="sec-title">What I do</h2>
+        <span class="sec-rule"></span>
+      </div>
+      <div class="roles" id="roles-list"></div>
+    </section>
+
+    <!-- ============ WORK ============ -->
     <section class="section" id="work">
-      <div class="section__head">
-        <h2 class="section__title">Systems &amp; projects</h2>
-        <a class="section__more" href="https://github.com/Vishwaksen0124?tab=repositories" target="_blank" rel="noopener">Full archive ↗</a>
+      <div class="sec-head">
+        <span class="sec-num">03</span>
+        <h2 class="sec-title">Selected work</h2>
+        <span class="sec-rule"></span>
+        <a class="sec-link" href="https://github.com/Vishwaksen0124?tab=repositories" target="_blank" rel="noopener">All repos ↗</a>
       </div>
-      <p class="work-note">A mix of production work at a startup and open-source side projects. Open-source ones link to the code.</p>
-      <div class="work-grid" id="work-grid"></div>
+      <div class="work" id="work-list"></div>
     </section>
 
     <!-- ============ EXPERIENCE ============ -->
     <section class="section" id="experience">
-      <div class="section__head"><h2 class="section__title">Experience</h2></div>
-      <article class="tile exp">
+      <div class="sec-head">
+        <span class="sec-num">04</span>
+        <h2 class="sec-title">Experience</h2>
+        <span class="sec-rule"></span>
+      </div>
+      <article class="exp">
         <div class="exp__head">
           <div>
-            <h3 class="exp__role">Engineer <span>· Kookar AI</span></h3>
-            <p class="exp__sub">Consumer AI startup — Gurgaon, India · Jun 2025 — Present</p>
+            <h3 class="exp__role">Software Engineer</h3>
+            <p class="exp__sub">Early-stage consumer-AI startup · Gurgaon, India</p>
           </div>
           <span class="exp__date">Jun 2025 — Present</span>
         </div>
@@ -115,18 +118,24 @@
           <li><strong>Backend.</strong> Built and own the core platform — FastAPI services, the order/agent backbone behind <strong>60+ orders/day across 6 partner platforms</strong>, and a distributed async pipeline on Celery, Redis, AWS EventBridge &amp; SQS routing thousands of events/day with idempotency, backoff and dead-letter queues.</li>
           <li><strong>Data &amp; analytics.</strong> Built the analytics layer in SQL/PLpgSQL — the daily Northstar pipeline (GMV, WAU/MAU, churn-risk) auto-emailed to founders, 4 Grafana dashboards, and ad-hoc cohort/funnel analyses.</li>
           <li><strong>AI.</strong> A Pydantic-typed, LangSmith-traced orchestration &amp; evaluation layer powering <strong>10+ LangGraph agents in production</strong>, with evaluators grading live runs across OpenAI / Anthropic / Mistral.</li>
-          <li><strong>Ops &amp; automation.</strong> Monitoring, alerting and on-call across services — killed a recurring weekly on-call page by root-causing a silent browser-automation bug in the payment path, restoring alarm trust.</li>
-          <li><strong>DevOps &amp; full-stack.</strong> Azure infra-as-code (Terraform), Docker &amp; GitHub Actions; React / Next.js ops dashboards consuming the services above.</li>
+          <li><strong>DevOps &amp; full-stack.</strong> Cloud infra-as-code (Terraform on Azure), Docker &amp; GitHub Actions; React / Next.js operational dashboards consuming the services above.</li>
+          <li><strong>Ops.</strong> Monitoring, alerting and on-call — killed a recurring weekly on-call page by root-causing a silent browser-automation bug in the payment path, restoring alarm trust.</li>
         </ul>
       </article>
     </section>
 
     <!-- ============ CONTACT ============ -->
-    <section class="section section--cta" id="contact">
-      <p class="cta__pre">Need someone who can take any part of the stack?</p>
-      <a class="cta__big" href="mailto:vishwaksenpujala@gmail.com">Let's talk<em>↗</em></a>
-      <div class="cta__row">
-        <a href="mailto:vishwaksenpujala@gmail.com">vishwaksenpujala@gmail.com</a>
+    <section class="section section--contact" id="contact">
+      <div class="sec-head">
+        <span class="sec-num">05</span>
+        <h2 class="sec-title">Contact</h2>
+        <span class="sec-rule"></span>
+      </div>
+      <p class="contact__lead">I'm open to full-time Software / Backend / AI Engineer roles and interesting collaborations. The fastest way to reach me is email — I'll get back to you.</p>
+      <a class="contact__email" href="mailto:vishwaksenpujala@gmail.com">vishwaksenpujala@gmail.com</a>
+      <div class="contact__row">
+        <a href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://www.linkedin.com/in/vishwaksenpujala" target="_blank" rel="noopener">LinkedIn ↗</a>
         <a href="tel:+918790265280">+91 87902 65280</a>
       </div>
     </section>
