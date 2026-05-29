@@ -3,76 +3,72 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vishwaksen Pujala — Software / AI / Backend Engineer</title>
-  <meta name="description" content="Vishwaksen Pujala — Software Engineer building production backend, distributed systems and AI agents. Final-year CSE at IIIT Sri City, AI Engineer Intern at Kookar AI." />
+  <title>Vishwaksen Pujala — Software / Backend / AI Engineer</title>
+  <meta name="description" content="Vishwaksen Pujala — Software Engineer building production backends, distributed systems and AI agents. Final-year CSE at IIIT Sri City, AI Engineer Intern at Kookar AI." />
   <meta name="author" content="Vishwaksen Pujala" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="Vishwaksen Pujala — Software / AI / Backend Engineer" />
-  <meta property="og:description" content="Production backend, distributed systems and AI agents. Building at Kookar AI." />
+  <meta property="og:title" content="Vishwaksen Pujala — Software / Backend / AI Engineer" />
+  <meta property="og:description" content="Production backends, distributed systems and AI agents. Building at Kookar AI." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://vishwaksen0124.github.io" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%23ffd6c4'/><circle cx='62' cy='42' r='30' fill='%23d9c9ff' opacity='.8'/><circle cx='40' cy='60' r='24' fill='%23bfecd8' opacity='.85'/></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230b1016'/><text x='50' y='68' font-size='52' font-family='monospace' font-weight='700' fill='%2364e3c2' text-anchor='middle'>V</text></svg>" />
 </head>
 <body>
-  <!-- ============ ATMOSPHERE ============ -->
-  <div class="atmosphere" aria-hidden="true">
-    <span class="blob blob--peach"></span>
-    <span class="blob blob--lilac"></span>
-    <span class="blob blob--mint"></span>
-    <span class="blob blob--sky"></span>
-  </div>
-  <div class="grain" aria-hidden="true"></div>
+  <div class="spotlight" id="spotlight" aria-hidden="true"></div>
 
   <!-- ============ NAV ============ -->
   <header class="nav" id="nav">
-    <a href="#top" class="nav__brand">VP<span class="dot">.</span></a>
+    <a href="#top" class="nav__brand" aria-label="Home">
+      <span class="nav__logo">V<span class="accent">P</span></span>
+    </a>
     <nav class="nav__links">
-      <a href="#about">About</a>
-      <a href="#experience">Experience</a>
-      <a href="#projects">Projects</a>
-      <a href="#skills">Skills</a>
-      <a href="#contact">Contact</a>
+      <a href="#about"><span class="num">01.</span> About</a>
+      <a href="#experience"><span class="num">02.</span> Experience</a>
+      <a href="#projects"><span class="num">03.</span> Work</a>
+      <a href="#skills"><span class="num">04.</span> Skills</a>
+      <a href="#contact"><span class="num">05.</span> Contact</a>
+      <a href="resume.pdf" class="btn btn--ghost nav__cta" target="_blank" rel="noopener">Résumé</a>
     </nav>
-    <a href="resume.pdf" class="btn btn--ghost nav__cta" target="_blank" rel="noopener">Résumé</a>
-    <button class="nav__toggle" id="theme-toggle" aria-label="Toggle theme">☀</button>
+    <button class="nav__toggle" id="theme-toggle" aria-label="Toggle light / dark">☾</button>
   </header>
+
+  <!-- ============ FIXED RAILS ============ -->
+  <div class="rail rail--left" aria-hidden="false">
+    <ul>
+      <li><a href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener" aria-label="GitHub">GH</a></li>
+      <li><a href="https://www.linkedin.com/in/vishwaksenpujala" target="_blank" rel="noopener" aria-label="LinkedIn">IN</a></li>
+      <li><a href="mailto:vishwaksenpujala@gmail.com" aria-label="Email">@</a></li>
+    </ul>
+  </div>
+  <div class="rail rail--right">
+    <a href="mailto:vishwaksenpujala@gmail.com" class="rail__email">vishwaksenpujala@gmail.com</a>
+  </div>
 
   <main id="top">
     <!-- ============ HERO ============ -->
     <section class="hero">
-      <div class="hero__inner">
-        <p class="hero__eyebrow">// Hi, I'm</p>
-        <h1 class="hero__name">Vishwaksen Pujala</h1>
-        <p class="hero__role">
-          I build <span class="hl">production backends</span>,
-          <span class="hl">distributed systems</span> &amp;
-          <span class="hl">AI agents</span>.
-        </p>
-        <p class="hero__blurb">
-          Final-year CS engineer at IIIT Sri City and AI Engineer Intern at
-          <strong>Kookar AI</strong>. I ship the systems behind real users —
-          a WhatsApp recruiting agent that screened 500+ candidates, an order
-          pipeline running 6 partner platforms, and 10+ LangGraph workflows in
-          production.
-        </p>
-        <div class="hero__cta">
-          <a href="#projects" class="btn btn--primary">View Work</a>
-          <a href="resume.pdf" class="btn btn--ghost" target="_blank" rel="noopener">Download Résumé</a>
-        </div>
-        <div class="hero__social">
-          <a href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener">GitHub</a>
-          <a href="https://www.linkedin.com/in/vishwaksenpujala" target="_blank" rel="noopener">LinkedIn</a>
-          <a href="mailto:vishwaksenpujala@gmail.com">Email</a>
-        </div>
+      <p class="hero__eyebrow">Hi, my name is</p>
+      <h1 class="hero__name">Vishwaksen Pujala.</h1>
+      <h2 class="hero__tagline">I build systems that run in production.</h2>
+      <p class="hero__blurb">
+        I'm a software engineer focused on <strong>backend</strong>,
+        <strong>distributed systems</strong> and <strong>AI agents</strong>.
+        Currently an AI Engineer Intern at <a href="#experience" class="link">Kookar&nbsp;AI</a>,
+        where I ship the infrastructure behind real users — a WhatsApp recruiting
+        agent that screened 500+ candidates, an order pipeline running 6 partner
+        platforms, and 10+ LangGraph workflows in production.
+      </p>
+      <div class="hero__cta">
+        <a href="#projects" class="btn btn--primary">See my work</a>
+        <a href="resume.pdf" class="btn btn--ghost" target="_blank" rel="noopener">Download résumé</a>
       </div>
+
       <div class="hero__stats">
-        <div class="stat"><span class="stat__num" data-count="500">0</span><span class="stat__plus">+</span><span class="stat__label">candidates screened by AI agent</span></div>
+        <div class="stat"><span class="stat__num" data-count="500">0</span><span class="stat__plus">+</span><span class="stat__label">candidates screened by my AI agent</span></div>
         <div class="stat"><span class="stat__num" data-count="60">0</span><span class="stat__plus">+</span><span class="stat__label">orders/day across 6 platforms</span></div>
         <div class="stat"><span class="stat__num" data-count="10">0</span><span class="stat__plus">+</span><span class="stat__label">LangGraph agents in production</span></div>
         <div class="stat"><span class="stat__num" data-count="8.5">0</span><span class="stat__label">CGPA · IIIT Sri City</span></div>
@@ -82,40 +78,49 @@
     <!-- ============ ABOUT ============ -->
     <section class="section" id="about">
       <div class="section__head">
-        <span class="section__index">01</span>
-        <h2 class="section__title">About</h2>
+        <h2 class="section__title"><span class="section__num">01.</span> About me</h2>
+        <span class="section__rule"></span>
       </div>
       <div class="about">
         <div class="about__text">
           <p>
-            I'm a final-year Computer Science engineer at
-            <strong>IIIT Sri City</strong> (CGPA 8.5/10), currently an AI Engineer
-            Intern at <strong>Kookar AI</strong>, a consumer AI startup in Gurgaon.
+            I'm a final-year Computer Science engineer at <strong>IIIT Sri City</strong>
+            (CGPA 8.5/10), currently an AI Engineer Intern at <strong>Kookar AI</strong>,
+            a consumer AI startup in Gurgaon.
           </p>
           <p>
-            My day-to-day is production backend work: FastAPI services, Celery /
-            Redis / AWS event pipelines, and LangGraph agent orchestration with
-            tracing and evaluation. I also own the daily Northstar BI report the
-            founders read every morning — so I live across engineering, AI, and
-            analytics.
+            My day-to-day is production backend work: FastAPI services, Celery / Redis /
+            AWS event pipelines, and LangGraph agent orchestration with tracing and
+            evaluation. I also own the daily Northstar BI report the founders read every
+            morning — so I work across engineering, AI, and analytics.
           </p>
           <p>
-            I like systems that have to be <em>correct under load</em> — idempotent
-            handlers, dead-letter queues, retry-aware ledgers — and I care about
-            the boring reliability work as much as the shiny agent demos.
+            I care about systems that stay <em>correct under load</em> — idempotent
+            handlers, dead-letter queues, retry-aware ledgers — as much as the agent demos
+            on top of them. Right now I'm looking for full-time
+            <strong>Software, Backend, or AI Engineer</strong> roles.
           </p>
-          <p>I'm looking for full-time <strong>Software Engineer, Backend, or AI Engineer</strong> roles.</p>
+          <p class="about__tools">A few things I work with daily:</p>
+          <ul class="about__list">
+            <li>Python · TypeScript</li>
+            <li>FastAPI · Node.js</li>
+            <li>LangGraph · LangSmith</li>
+            <li>Celery · Redis · SQS</li>
+            <li>AWS · Docker</li>
+            <li>PostgreSQL · Grafana</li>
+          </ul>
         </div>
         <aside class="about__card">
+          <div class="about__avatar">VP</div>
           <h3>At a glance</h3>
           <ul>
-            <li><span>Role</span> AI Engineer Intern @ Kookar AI</li>
-            <li><span>Education</span> B.Tech CSE, IIIT Sri City (2022–2026)</li>
+            <li><span>Role</span> AI Engineer Intern · Kookar AI</li>
+            <li><span>Education</span> B.Tech CSE · IIIT Sri City (2022–26)</li>
             <li><span>Based in</span> Gurgaon, India</li>
-            <li><span>Focus</span> Backend · Distributed Systems · LLM Agents</li>
-            <li><span>Research</span> ChromaGene (gene expression transformer)</li>
+            <li><span>Focus</span> Backend · Distributed · LLM Agents</li>
+            <li><span>Research</span> ChromaGene — gene-expression transformer</li>
           </ul>
-          <a class="about__resume" href="resume.pdf" target="_blank" rel="noopener">📄 Full résumé (PDF)</a>
+          <a class="about__resume" href="resume.pdf" target="_blank" rel="noopener">→ Full résumé (PDF)</a>
         </aside>
       </div>
     </section>
@@ -123,88 +128,68 @@
     <!-- ============ EXPERIENCE ============ -->
     <section class="section" id="experience">
       <div class="section__head">
-        <span class="section__index">02</span>
-        <h2 class="section__title">Experience</h2>
+        <h2 class="section__title"><span class="section__num">02.</span> Where I've worked</h2>
+        <span class="section__rule"></span>
       </div>
-      <div class="timeline">
-        <article class="exp">
-          <div class="exp__meta">
-            <span class="exp__date">Jun 2025 — Present</span>
-            <span class="exp__loc">Gurgaon, India</span>
-          </div>
-          <div class="exp__body">
-            <h3 class="exp__role">AI Engineer Intern</h3>
-            <p class="exp__org">Kookar AI · Consumer AI startup</p>
-            <ul class="exp__points">
-              <li><strong>Architected a WhatsApp AI recruiting agent</strong> (Node.js, Mistral) that autonomously screened <strong>500+ candidates</strong> and fed a pipeline that closed 10 hires — 3 specialized LLM agents (resume analysis, question generation, conversation), human-in-the-loop approval, a React + Socket.IO live dashboard, and Redis-backed queues for concurrent interviews.</li>
-              <li><strong>Engineered the order-orchestration backbone</strong> for a grocery platform doing <strong>60+ orders/day across 6 partner integrations</strong>: cart orchestrator, retry-aware tracking ledger with ops-alert escalation, post-invoice wallet debit, refund signaling, and live-inventory pre-checks.</li>
-              <li><strong>Designed a distributed async pipeline</strong> on Celery, Redis, AWS EventBridge &amp; SQS routing <strong>thousands of events/day</strong> across 20+ task types on EC2 — idempotent handlers, exponential backoff, dead-letter queues, at-least-once delivery.</li>
-              <li><strong>Built a Pydantic-typed, LangSmith-traced orchestration &amp; evaluation layer</strong> powering <strong>10+ LangGraph agents in production</strong>, including a 6-agent / 15-step workflow completing in ~40s, with evaluators grading live runs across OpenAI / Anthropic / Mistral.</li>
-              <li><strong>Owned BI &amp; observability for the org:</strong> a daily Northstar pipeline (GMV, WAU/MAU, churn-risk, escalations) auto-emailed to founders, plus 4 Grafana dashboards and ad-hoc cohort/funnel analyses.</li>
-              <li><strong>Killed a recurring weekly on-call page</strong> by root-causing a silent browser-automation bug swallowing network errors in the payment path — restoring alarm trust.</li>
-            </ul>
-          </div>
-        </article>
-      </div>
+      <article class="exp">
+        <div class="exp__meta">
+          <span class="exp__date">Jun 2025 — Present</span>
+          <span class="exp__loc">Gurgaon, India</span>
+        </div>
+        <div class="exp__body">
+          <h3 class="exp__role">AI Engineer Intern <span class="exp__at">@ Kookar AI</span></h3>
+          <p class="exp__org">Consumer AI startup</p>
+          <ul class="exp__points">
+            <li><strong>Architected a WhatsApp AI recruiting agent</strong> (Node.js, Mistral) that autonomously screened <strong>500+ candidates</strong> and fed a pipeline that closed 10 hires — 3 specialized LLM agents (resume analysis, question generation, conversation), human-in-the-loop approval, a React + Socket.IO live dashboard, and Redis-backed queues for concurrent interviews.</li>
+            <li><strong>Engineered the order-orchestration backbone</strong> for a grocery platform doing <strong>60+ orders/day across 6 partner integrations</strong>: cart orchestrator, retry-aware tracking ledger with ops-alert escalation, post-invoice wallet debit, refund signaling, and live-inventory pre-checks.</li>
+            <li><strong>Designed a distributed async pipeline</strong> on Celery, Redis, AWS EventBridge &amp; SQS routing <strong>thousands of events/day</strong> across 20+ task types on EC2 — idempotent handlers, exponential backoff, dead-letter queues, at-least-once delivery.</li>
+            <li><strong>Built a Pydantic-typed, LangSmith-traced orchestration &amp; evaluation layer</strong> powering <strong>10+ LangGraph agents in production</strong>, including a 6-agent / 15-step workflow completing in ~40s, with evaluators grading live runs across OpenAI / Anthropic / Mistral.</li>
+            <li><strong>Owned BI &amp; observability for the org:</strong> a daily Northstar pipeline (GMV, WAU/MAU, churn-risk, escalations) auto-emailed to founders, plus 4 Grafana dashboards and ad-hoc cohort/funnel analyses.</li>
+            <li><strong>Killed a recurring weekly on-call page</strong> by root-causing a silent browser-automation bug swallowing network errors in the payment path — restoring alarm trust.</li>
+          </ul>
+        </div>
+      </article>
     </section>
 
     <!-- ============ PROJECTS ============ -->
     <section class="section" id="projects">
       <div class="section__head">
-        <span class="section__index">03</span>
-        <h2 class="section__title">Projects</h2>
-        <a class="section__more" href="https://github.com/Vishwaksen0124?tab=repositories" target="_blank" rel="noopener">All repos →</a>
+        <h2 class="section__title"><span class="section__num">03.</span> Things I've built</h2>
+        <span class="section__rule"></span>
+        <a class="section__more" href="https://github.com/Vishwaksen0124?tab=repositories" target="_blank" rel="noopener">View archive →</a>
       </div>
-      <div class="projects" id="projects-grid">
-        <!-- cards injected by script.js, with this static fallback -->
-      </div>
+      <div class="projects" id="projects-grid"></div>
     </section>
 
     <!-- ============ SKILLS ============ -->
     <section class="section" id="skills">
       <div class="section__head">
-        <span class="section__index">04</span>
-        <h2 class="section__title">Skills</h2>
+        <h2 class="section__title"><span class="section__num">04.</span> Toolbox</h2>
+        <span class="section__rule"></span>
       </div>
       <div class="skills" id="skills-grid"></div>
     </section>
 
     <!-- ============ CONTACT ============ -->
     <section class="section section--contact" id="contact">
-      <div class="section__head">
-        <span class="section__index">05</span>
-        <h2 class="section__title">Get in touch</h2>
-      </div>
-      <div class="contact">
-        <p class="contact__lead">
-          I'm open to full-time Software / Backend / AI Engineer roles and
-          interesting collaborations. The fastest way to reach me is email.
-        </p>
-        <div class="contact__links">
-          <a href="mailto:vishwaksenpujala@gmail.com" class="contact__card">
-            <span class="contact__k">Email</span>
-            <span class="contact__v">vishwaksenpujala@gmail.com</span>
-          </a>
-          <a href="https://www.linkedin.com/in/vishwaksenpujala" target="_blank" rel="noopener" class="contact__card">
-            <span class="contact__k">LinkedIn</span>
-            <span class="contact__v">in/vishwaksenpujala</span>
-          </a>
-          <a href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener" class="contact__card">
-            <span class="contact__k">GitHub</span>
-            <span class="contact__v">@Vishwaksen0124</span>
-          </a>
-          <a href="tel:+918790265280" class="contact__card">
-            <span class="contact__k">Phone</span>
-            <span class="contact__v">+91 87902 65280</span>
-          </a>
-        </div>
+      <p class="contact__pre"><span class="section__num">05.</span> What's next?</p>
+      <h2 class="contact__title">Get in touch</h2>
+      <p class="contact__lead">
+        I'm open to full-time Software / Backend / AI Engineer roles and interesting
+        collaborations. My inbox is always open — I'll get back to you.
+      </p>
+      <a href="mailto:vishwaksenpujala@gmail.com" class="btn btn--primary btn--lg">Say hello</a>
+      <div class="contact__links">
+        <a href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://www.linkedin.com/in/vishwaksenpujala" target="_blank" rel="noopener">LinkedIn ↗</a>
+        <a href="tel:+918790265280">+91 87902 65280</a>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <p>Built &amp; designed by Vishwaksen Pujala · <span id="year"></span></p>
-    <p class="footer__note">Hand-coded HTML/CSS/JS · hosted on GitHub Pages</p>
+    <p>Designed &amp; built by Vishwaksen Pujala</p>
+    <p class="footer__note">Hand-coded · hosted on GitHub Pages · <span id="year"></span></p>
   </footer>
 
   <script src="script.js"></script>

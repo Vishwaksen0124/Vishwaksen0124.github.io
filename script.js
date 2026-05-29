@@ -6,7 +6,7 @@
 const PROJECTS = [
   {
     title: "WhatsApp AI Recruiting Agent",
-    icon: "🤖",
+    glyph: "◆",
     featured: true,
     desc: "Autonomous WhatsApp recruiting agent that screened 500+ candidates — 3 specialized LLM agents (resume analysis, question generation, conversation), human-in-the-loop approval, and a live React + Socket.IO dashboard backed by Redis queues.",
     tags: ["Node.js", "Mistral", "React", "Socket.IO", "Redis"],
@@ -14,7 +14,7 @@ const PROJECTS = [
   },
   {
     title: "Creative Writing Studio",
-    icon: "✍️",
+    glyph: "✦",
     featured: true,
     desc: "Public multi-agent GenAI writing platform: 3 LangChain agents (Plot, Dialogue, Editor) co-author long-form stories with FAISS retrieval over running context and Mistral generation, served live on Streamlit.",
     tags: ["LangChain", "Mistral", "FAISS", "Streamlit"],
@@ -22,42 +22,42 @@ const PROJECTS = [
   },
   {
     title: "LoveStream",
-    icon: "📹",
+    glyph: "▣",
     desc: "Low-latency P2P video & screen-sharing app with system audio, live presence, and an admin console. WebRTC for media transport, Supabase Realtime for presence sync, on Next.js 16 + TypeScript.",
     tags: ["Next.js 16", "TypeScript", "WebRTC", "Supabase"],
     links: { github: "https://github.com/Vishwaksen0124/lovestream" }
   },
   {
     title: "Planity",
-    icon: "✅",
+    glyph: "▤",
     desc: "Role-based team task manager with subtasks, soft-delete/restore, real-time notifications, Redis caching, MongoDB Atlas, OpenAPI docs, and a Docker Compose dev environment wired into CI/CD.",
     tags: ["React", "Node.js", "MongoDB", "Redis", "Docker"],
     links: { github: "https://github.com/Vishwaksen0124/Planity" }
   },
   {
     title: "Image Stitching — RDISNet",
-    icon: "🧩",
-    desc: "Deep-learning image stitching with RDISNet: dilated residual encoders plus a transformer context-fusion module for robust seam-free panoramas.",
+    glyph: "◫",
+    desc: "Deep-learning image stitching with RDISNet: dilated residual encoders plus a transformer context-fusion module for robust, seam-free panoramas.",
     tags: ["PyTorch", "Transformers", "Computer Vision"],
     links: { github: "https://github.com/Vishwaksen0124/image-stitching-rdisnet" }
   },
   {
-    title: "ChromaGene (Research)",
-    icon: "🧬",
+    title: "ChromaGene — Research",
+    glyph: "❖",
     desc: "A PyTorch transformer that infers cell-type-specific gene expression from ATAC-seq chromatin accessibility data.",
     tags: ["PyTorch", "Transformers", "Genomics"],
     links: {}
   },
   {
-    title: "Resume ↔ JD Analyzer",
-    icon: "📑",
-    desc: "Tool that analyses a résumé against a job description, scoring fit and surfacing the gaps and keywords that matter for ATS.",
+    title: "Résumé ↔ JD Analyzer",
+    glyph: "▦",
+    desc: "Analyses a résumé against a job description, scoring fit and surfacing the gaps and keywords that matter for ATS.",
     tags: ["Python", "NLP", "LLM"],
     links: { github: "https://github.com/Vishwaksen0124/Resume-Job-JD-analyzer" }
   },
   {
     title: "Customer Segmentation",
-    icon: "📊",
+    glyph: "◧",
     desc: "Unsupervised customer segmentation using KNN clustering to group buyers by behaviour for targeted strategy.",
     tags: ["Python", "scikit-learn", "Clustering"],
     links: { github: "https://github.com/Vishwaksen0124/Customer-Segmentation" }
@@ -86,7 +86,7 @@ function renderProjects() {
     return `
       <article class="card reveal">
         <div class="card__top">
-          <span class="card__icon">${p.icon}</span>
+          <span class="card__icon">${p.glyph}</span>
           ${linksHtml}
         </div>
         ${featured}
@@ -95,14 +95,6 @@ function renderProjects() {
         <div class="card__tags">${p.tags.map((t) => `<span class="tag">${t}</span>`).join("")}</div>
       </article>`;
   }).join("");
-
-  // pointer-follow glow
-  grid.querySelectorAll(".card").forEach((card) => {
-    card.addEventListener("mousemove", (e) => {
-      const r = card.getBoundingClientRect();
-      card.style.setProperty("--mx", `${e.clientX - r.left}px`);
-    });
-  });
 }
 
 /* ---------- render skills ---------- */
@@ -115,25 +107,35 @@ function renderSkills() {
     </div>`).join("");
 }
 
-/* ---------- theme toggle (dawn ☀ / dusk ☾) ---------- */
+/* ---------- theme toggle (dark ☾ / light ☀) ---------- */
 function initTheme() {
   const toggle = document.getElementById("theme-toggle");
   const apply = (mode) => {
-    if (mode === "dusk") document.documentElement.setAttribute("data-theme", "dusk");
+    if (mode === "light") document.documentElement.setAttribute("data-theme", "light");
     else document.documentElement.removeAttribute("data-theme");
-    toggle.textContent = mode === "dusk" ? "☾" : "☀";
+    toggle.textContent = mode === "light" ? "☀" : "☾";
   };
-  apply(localStorage.getItem("theme") || "dawn");
+  apply(localStorage.getItem("theme") || "dark");
   toggle.addEventListener("click", () => {
-    const next = document.documentElement.getAttribute("data-theme") === "dusk" ? "dawn" : "dusk";
+    const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
     apply(next);
     localStorage.setItem("theme", next);
   });
 }
 
+/* ---------- mouse-follow spotlight ---------- */
+function initSpotlight() {
+  const sp = document.getElementById("spotlight");
+  if (matchMedia("(pointer: coarse)").matches) { sp.style.display = "none"; return; }
+  window.addEventListener("pointermove", (e) => {
+    sp.style.setProperty("--x", e.clientX + "px");
+    sp.style.setProperty("--y", e.clientY + "px");
+  }, { passive: true });
+}
+
 /* ---------- scroll reveal ---------- */
 function initReveal() {
-  const els = document.querySelectorAll(".reveal, .section, .stat, .exp");
+  const els = document.querySelectorAll(".section, .card, .stat, .skill-group, .exp");
   els.forEach((el) => el.classList.add("reveal"));
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
@@ -145,7 +147,6 @@ function initReveal() {
 
 /* ---------- animated counters ---------- */
 function initCounters() {
-  const nums = document.querySelectorAll(".stat__num");
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
       if (!e.isIntersecting) return;
@@ -163,8 +164,8 @@ function initCounters() {
       tick();
       io.unobserve(el);
     });
-  }, { threshold: 0.5 });
-  nums.forEach((n) => io.observe(n));
+  }, { threshold: 0.6 });
+  document.querySelectorAll(".stat__num").forEach((n) => io.observe(n));
 }
 
 /* ---------- nav scroll state ---------- */
@@ -180,6 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderProjects();
   renderSkills();
   initTheme();
+  initSpotlight();
   initNav();
   initReveal();
   initCounters();
