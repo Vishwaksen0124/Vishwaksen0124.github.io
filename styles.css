@@ -147,6 +147,23 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
 .section__more { margin-left: auto; font-family: var(--mono); font-size: .82rem; color: var(--dim); }
 .section__more:hover { color: var(--accent); }
 
+/* hats grid */
+.hats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap); }
+.hat-card { display: flex; flex-direction: column; min-height: 190px; }
+.hat__role { font-family: var(--disp); font-weight: 700; font-size: 1.4rem; letter-spacing: -.01em; }
+.hat__role::before { content: ""; display: block; width: 28px; height: 3px; background: var(--accent); border-radius: 3px; margin-bottom: .9rem; }
+.hat__blurb { color: var(--dim); font-size: .94rem; margin: .7rem 0 auto; }
+.hat__tools { font-family: var(--mono); font-size: .74rem; color: var(--faint); margin-top: 1rem; line-height: 1.6; }
+.hat__proof { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--mono); font-size: .74rem; color: var(--ink); margin-top: .8rem; padding-top: .8rem; border-top: 1px solid var(--line); }
+.hat__proof i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex: none; }
+
+/* work note */
+.work-note { color: var(--faint); font-family: var(--mono); font-size: .8rem; margin: -.6rem 0 1.5rem; max-width: 70ch; }
+
+/* private badge */
+.wc__priv { font-family: var(--mono); font-size: .72rem; color: var(--faint); margin-top: .8rem; }
+.wc__priv::first-letter { color: var(--accent); }
+
 /* work grid */
 .work-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap); }
 .work-card { display: flex; flex-direction: column; min-height: 200px; cursor: pointer; }
@@ -197,13 +214,13 @@ main { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
 @media (max-width: 900px) {
   .bento { grid-template-columns: 1fr 1fr; grid-template-areas:
     "id id" "m1 m2" "feat feat" "m3 stack" "now contact"; }
-  .work-grid { grid-template-columns: 1fr 1fr; }
+  .work-grid, .hats-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 600px) {
   .nav__links a:not(.nav__resume) { display: none; }
   .bento { grid-template-columns: 1fr; grid-template-areas:
     "id" "m1" "m2" "m3" "feat" "stack" "now" "contact"; }
-  .work-grid { grid-template-columns: 1fr; }
+  .work-grid, .hats-grid { grid-template-columns: 1fr; }
   .cta__row { gap: 1rem; }
 }
 @media (prefers-reduced-motion: reduce) {

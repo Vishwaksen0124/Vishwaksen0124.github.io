@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vishwaksen Pujala — Software / Backend / AI Engineer</title>
-  <meta name="description" content="Vishwaksen Pujala — software engineer building production backends, distributed systems and AI agents. IIIT Sri City, AI Engineer Intern at Kookar AI." />
-  <meta property="og:title" content="Vishwaksen Pujala — Software / Backend / AI Engineer" />
-  <meta property="og:description" content="Production backends, distributed systems and AI agents." />
+  <title>Vishwaksen Pujala — Startup Engineer (Backend · Data · Infra · AI)</title>
+  <meta name="description" content="Vishwaksen Pujala — a startup engineer who wears every hat: backend, data/analytics, DevOps, full-stack, ops and AI. Building production systems at Kookar AI." />
+  <meta property="og:title" content="Vishwaksen Pujala — Startup Engineer" />
+  <meta property="og:description" content="Wears every hat: backend, data, infra, full-stack, ops, AI. 1,500+ contributions/yr at Kookar AI." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://vishwaksen0124.github.io" />
 
@@ -17,10 +17,10 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%230a0b0a'/><text x='50' y='70' font-size='58' font-family='monospace' font-weight='700' fill='%23c6f135' text-anchor='middle'>V</text></svg>" />
 </head>
 <body>
-  <!-- ============ NAV ============ -->
   <header class="nav" id="nav">
     <a href="#top" class="nav__brand">Vishwaksen&nbsp;Pujala</a>
     <nav class="nav__links">
+      <a href="#hats">What I do</a>
       <a href="#work">Work</a>
       <a href="#experience">Experience</a>
       <a href="#contact">Contact</a>
@@ -32,51 +32,45 @@
   <main id="top">
     <!-- ============ BENTO OVERVIEW ============ -->
     <section class="bento" aria-label="Overview">
-      <!-- identity -->
       <article class="tile tile--id">
-        <span class="eyebrow">Software Engineer — Backend · Distributed · AI</span>
+        <span class="eyebrow">Startup Engineer — does whatever the product needs</span>
         <h1 class="id__name">Vishwaksen<br>Pujala<em>✦</em></h1>
-        <p class="id__stmt">I build the infrastructure that runs in production — event pipelines, orchestration layers, and AI agents that hold up under real traffic.</p>
+        <p class="id__stmt">At an early-stage AI startup you don't get one job title — you get all of them. I've shipped <strong>backend, data &amp; analytics, infrastructure, full-stack and ops</strong> at <strong>Kookar&nbsp;AI</strong>, whatever the week demanded.</p>
         <span class="pill"><i></i> Available for full-time roles</span>
       </article>
 
-      <!-- metrics -->
       <article class="tile tile--metric">
-        <span class="metric__num" data-count="500">0</span><span class="metric__plus">+</span>
-        <span class="metric__label">candidates screened by my WhatsApp AI agent</span>
+        <span class="metric__num" data-count="1552">0</span>
+        <span class="metric__label">contributions on GitHub in the past year</span>
       </article>
       <article class="tile tile--metric">
-        <span class="metric__num" data-count="60">0</span><span class="metric__plus">+</span>
-        <span class="metric__label">orders/day orchestrated across 6 platforms</span>
+        <span class="metric__num" data-count="530">0</span><span class="metric__plus">+</span>
+        <span class="metric__label">commits across the production services I work on</span>
       </article>
       <article class="tile tile--metric">
-        <span class="metric__num" data-count="10">0</span><span class="metric__plus">+</span>
-        <span class="metric__label">LangGraph agents running in production</span>
+        <span class="metric__num" data-count="6">0</span>
+        <span class="metric__label">engineering hats worn day to day</span>
       </article>
 
-      <!-- featured project -->
       <a class="tile tile--feature" href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener">
         <span class="tile__tag">Featured build</span>
         <h2 class="feature__title">WhatsApp AI<br>Recruiting Agent</h2>
-        <p class="feature__desc">3 specialized LLM agents — resume analysis, question generation, conversation — with human-in-the-loop approval, a live React + Socket.IO dashboard, and Redis-backed queues for concurrent interviews. Screened 500+ candidates; closed 10 hires.</p>
+        <p class="feature__desc">End-to-end: 3 specialized LLM agents (resume analysis, question generation, conversation), human-in-the-loop approval, a live React + Socket.IO dashboard, and Redis-backed queues — I built the backend, the AI, and the frontend. Screened 500+ candidates; closed 10 hires.</p>
         <span class="feature__stack">Node.js · Mistral · React · Socket.IO · Redis</span>
         <span class="tile__arrow">↗</span>
       </a>
 
-      <!-- stack -->
       <article class="tile tile--stack">
-        <span class="tile__tag">Toolbox</span>
+        <span class="tile__tag">Languages &amp; tools I ship in</span>
         <div class="chips" id="chips"></div>
       </article>
 
-      <!-- now / education -->
       <article class="tile tile--now">
         <span class="tile__tag">Now</span>
-        <p class="now__role">AI Engineer Intern<br><strong>Kookar AI</strong></p>
+        <p class="now__role">Engineer<br><strong>Kookar AI</strong></p>
         <p class="now__edu">B.Tech CSE · IIIT Sri City ’26<br>CGPA 8.5 · Gurgaon, India</p>
       </article>
 
-      <!-- contact -->
       <article class="tile tile--contact">
         <span class="tile__tag">Elsewhere</span>
         <ul class="contact__links">
@@ -87,42 +81,49 @@
       </article>
     </section>
 
-    <!-- ============ WORK ============ -->
+    <!-- ============ WHAT I DO (the hats) ============ -->
+    <section class="section" id="hats">
+      <div class="section__head">
+        <h2 class="section__title">Every hat at a startup</h2>
+        <span class="section__more">role chosen by the problem, not the title</span>
+      </div>
+      <div class="hats-grid" id="hats-grid"></div>
+    </section>
+
+    <!-- ============ WORK / SYSTEMS ============ -->
     <section class="section" id="work">
       <div class="section__head">
-        <h2 class="section__title">Selected work</h2>
+        <h2 class="section__title">Systems &amp; projects</h2>
         <a class="section__more" href="https://github.com/Vishwaksen0124?tab=repositories" target="_blank" rel="noopener">Full archive ↗</a>
       </div>
+      <p class="work-note">A mix of production work at a startup and open-source side projects. Open-source ones link to the code.</p>
       <div class="work-grid" id="work-grid"></div>
     </section>
 
     <!-- ============ EXPERIENCE ============ -->
     <section class="section" id="experience">
-      <div class="section__head">
-        <h2 class="section__title">Experience</h2>
-      </div>
+      <div class="section__head"><h2 class="section__title">Experience</h2></div>
       <article class="tile exp">
         <div class="exp__head">
           <div>
-            <h3 class="exp__role">AI Engineer Intern <span>· Kookar AI</span></h3>
-            <p class="exp__sub">Consumer AI startup — Gurgaon, India</p>
+            <h3 class="exp__role">Engineer <span>· Kookar AI</span></h3>
+            <p class="exp__sub">Consumer AI startup — Gurgaon, India · Jun 2025 — Present</p>
           </div>
           <span class="exp__date">Jun 2025 — Present</span>
         </div>
         <ul class="exp__points">
-          <li><strong>Architected a WhatsApp AI recruiting agent</strong> (Node.js, Mistral) that autonomously screened <strong>500+ candidates</strong> and fed a pipeline that closed 10 hires — 3 specialized LLM agents, human-in-the-loop approval, a React + Socket.IO dashboard, Redis-backed concurrent interviews.</li>
-          <li><strong>Engineered the order-orchestration backbone</strong> for a grocery platform doing <strong>60+ orders/day across 6 partner integrations</strong>: cart orchestrator, retry-aware tracking ledger with ops-alert escalation, post-invoice wallet debit, refund signaling, live-inventory pre-checks.</li>
-          <li><strong>Designed a distributed async pipeline</strong> on Celery, Redis, AWS EventBridge &amp; SQS routing <strong>thousands of events/day</strong> across 20+ task types — idempotent handlers, exponential backoff, dead-letter queues, at-least-once delivery.</li>
-          <li><strong>Built a Pydantic-typed, LangSmith-traced orchestration &amp; evaluation layer</strong> powering <strong>10+ LangGraph agents in production</strong>, including a 6-agent / 15-step workflow completing in ~40s, evaluators grading live runs across OpenAI / Anthropic / Mistral.</li>
-          <li><strong>Owned BI &amp; observability:</strong> a daily Northstar pipeline (GMV, WAU/MAU, churn-risk, escalations) auto-emailed to founders, plus 4 Grafana dashboards and ad-hoc cohort/funnel analyses.</li>
-          <li><strong>Killed a recurring weekly on-call page</strong> by root-causing a silent browser-automation bug swallowing network errors in the payment path.</li>
+          <li><strong>Backend.</strong> Built and own the core platform — FastAPI services, the order/agent backbone, and a distributed async pipeline on Celery, Redis, AWS EventBridge &amp; SQS routing thousands of events/day with idempotency, backoff and dead-letter queues.</li>
+          <li><strong>Data &amp; analytics.</strong> Built the analytics layer in SQL/PLpgSQL — the daily Northstar pipeline (GMV, WAU/MAU, churn-risk) auto-emailed to founders, 4 Grafana dashboards, and ad-hoc cohort/funnel analyses.</li>
+          <li><strong>AI.</strong> A Pydantic-typed, LangSmith-traced orchestration &amp; evaluation layer powering <strong>10+ LangGraph agents in production</strong>, plus the WhatsApp recruiting agent that screened 500+ candidates.</li>
+          <li><strong>Ops &amp; automation.</strong> The order pipeline behind <strong>60+ orders/day across 6 partner platforms</strong>; killed a recurring weekly on-call page by root-causing a silent browser-automation bug in the payment path.</li>
+          <li><strong>DevOps &amp; full-stack.</strong> Azure infra-as-code (Terraform), Docker &amp; GitHub Actions; React / Next.js ops dashboards consuming the services above.</li>
         </ul>
       </article>
     </section>
 
     <!-- ============ CONTACT ============ -->
     <section class="section section--cta" id="contact">
-      <p class="cta__pre">Have something to build?</p>
+      <p class="cta__pre">Need someone who can take any part of the stack?</p>
       <a class="cta__big" href="mailto:vishwaksenpujala@gmail.com">Let's talk<em>↗</em></a>
       <div class="cta__row">
         <a href="mailto:vishwaksenpujala@gmail.com">vishwaksenpujala@gmail.com</a>
