@@ -99,7 +99,8 @@ main { width: 100%; }
 .about__facts li { font-size: .95rem; color: var(--ink); display: flex; flex-direction: column; padding-left: 1rem; border-left: 2px solid var(--line); }
 .about__facts li span { font-family: var(--mono); font-size: .72rem; color: var(--faint); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .1rem; }
 .about__side { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.8rem; text-align: center; position: sticky; top: 100px; }
-.about__mono { width: 84px; height: 84px; margin: 0 auto 1.2rem; display: grid; place-items: center; border-radius: 18px; background: var(--bg-2); border: 1px solid var(--accent); color: var(--accent); font-family: var(--disp); font-weight: 800; font-size: 2rem; }
+.about__photo { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; margin-bottom: 1.3rem; display: block; filter: grayscale(.2) contrast(1.02); transition: filter .35s ease; }
+.about__side:hover .about__photo { filter: grayscale(0) contrast(1.04); }
 .about__name { font-family: var(--disp); font-weight: 700; font-size: 1.2rem; color: var(--ink); }
 .about__role { font-family: var(--mono); font-size: .82rem; color: var(--dim); margin-top: .2rem; }
 .about__resume { display: inline-block; margin-top: 1.4rem; font-family: var(--mono); font-size: .82rem; color: var(--accent); }
