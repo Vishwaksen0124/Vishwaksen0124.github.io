@@ -8,7 +8,7 @@ const ROLES = [
     tools: "FastAPI · Celery · Redis · SQS · EventBridge" },
   { name: "Data & Analytics",
     desc: "The metrics layer behind the company: Northstar pipelines, cohort & funnel analysis, and the dashboards founders read every morning.",
-    tools: "PLpgSQL · Pandas · Grafana · BigQuery" },
+    tools: "PLpgSQL · Pandas · Grafana · Cohort & Funnel" },
   { name: "AI / LLM Engineer",
     desc: "Production agent orchestration with tracing, evaluation and vendor swaps across OpenAI, Anthropic and Mistral.",
     tools: "LangGraph · LangSmith · RAG · PyTorch" },
@@ -77,9 +77,10 @@ function renderWorks() {
   const list = document.getElementById("work-list");
   list.innerHTML = WORKS.map((w) => {
     const open = !!w.link;
+    const a11y = open ? ` data-href="${w.link}" role="link" tabindex="0" aria-label="${w.title} — open project (new tab)"` : "";
     return `
-      <article class="work-card reveal${open ? " is-link" : ""}"${open ? ` data-href="${w.link}"` : ""}>
-        ${open ? '<span class="work-card__arrow">↗</span>' : ""}
+      <article class="work-card reveal${open ? " is-link" : ""}"${a11y}>
+        ${open ? '<span class="work-card__arrow" aria-hidden="true">↗</span>' : ""}
         <span class="work-card__tag">${w.tag}</span>
         <h3>${w.title}</h3>
         <p>${w.desc}</p>
@@ -87,9 +88,10 @@ function renderWorks() {
       </article>`;
   }).join("");
   list.querySelectorAll(".work-card.is-link").forEach((c) => {
-    c.addEventListener("click", (e) => {
-      if (e.target.closest("a")) return;
-      window.open(c.dataset.href, "_blank", "noopener");
+    const go = () => window.open(c.dataset.href, "_blank", "noopener");
+    c.addEventListener("click", (e) => { if (!e.target.closest("a")) go(); });
+    c.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); }
     });
   });
 }
