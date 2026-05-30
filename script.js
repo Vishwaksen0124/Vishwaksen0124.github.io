@@ -4,7 +4,7 @@
 
 const ROLES = [
   { name: "Backend Engineer",
-    desc: "APIs, services and the event-driven backbone everything else runs on — built for correctness under load.",
+    desc: "APIs, services and the event-driven backbone everything else runs on, built for correctness under load.",
     tools: "FastAPI · Celery · Redis · SQS · EventBridge" },
   { name: "Data & Analytics",
     desc: "The metrics layer behind the company: Northstar pipelines, cohort & funnel analysis, and the dashboards founders read every morning.",
@@ -19,22 +19,22 @@ const ROLES = [
     desc: "Operational dashboards and user-facing apps wired straight to the services behind them.",
     tools: "React · Next.js · TypeScript · Socket.IO" },
   { name: "Operations",
-    desc: "Monitoring, alerting and on-call — keeping production healthy and the team unblocked.",
+    desc: "Monitoring, alerting and on-call, keeping production healthy and the team unblocked.",
     tools: "CloudWatch · Grafana alerts · Slack · runbooks" }
 ];
 
 const WORKS = [
   { title: "Creative Writing Studio", tag: "GenAI · live", link: "https://creativewritingstudio.streamlit.app",
-    desc: "A live multi-agent writing platform — Plot, Dialogue & Editor agents co-author long-form stories with FAISS retrieval over running context and Mistral generation, served publicly on Streamlit.",
+    desc: "A live multi-agent writing platform where Plot, Dialogue & Editor agents co-author long-form stories with FAISS retrieval over running context and Mistral generation, served publicly on Streamlit.",
     stack: "LangChain · Mistral · FAISS · Streamlit" },
   { title: "LoveStream", tag: "Realtime", link: "https://github.com/Vishwaksen0124/lovestream",
-    desc: "Low-latency peer-to-peer video & screen-share with system audio and live presence — WebRTC media transport, Supabase Realtime presence sync.",
+    desc: "Low-latency peer-to-peer video & screen-share with system audio and live presence, over WebRTC media transport with Supabase Realtime presence sync.",
     stack: "Next.js 16 · WebRTC · Supabase" },
   { title: "Planity", tag: "Full-stack", link: "https://github.com/Vishwaksen0124/Planity",
     desc: "Role-based team task manager: subtasks, soft-delete/restore, real-time notifications, Redis caching, MongoDB Atlas, Docker Compose + CI/CD.",
     stack: "React · Node.js · MongoDB · Redis" },
-  { title: "Image Stitching — RDISNet", tag: "Computer vision", link: "https://github.com/Vishwaksen0124/image-stitching-rdisnet",
-    desc: "Deep-learning image stitching — dilated residual encoders plus a transformer context-fusion module for robust, seam-free panoramas.",
+  { title: "Image Stitching (RDISNet)", tag: "Computer vision", link: "https://github.com/Vishwaksen0124/image-stitching-rdisnet",
+    desc: "Deep-learning image stitching with dilated residual encoders plus a transformer context-fusion module for robust, seam-free panoramas.",
     stack: "PyTorch · Transformers" },
   { title: "ChromaGene", tag: "Research", link: "",
     desc: "A transformer that infers cell-type-specific gene expression from ATAC-seq chromatin accessibility data.",
@@ -77,7 +77,7 @@ function renderWorks() {
   const list = document.getElementById("work-list");
   list.innerHTML = WORKS.map((w) => {
     const open = !!w.link;
-    const a11y = open ? ` data-href="${w.link}" role="link" tabindex="0" aria-label="${w.title} — open project (new tab)"` : "";
+    const a11y = open ? ` data-href="${w.link}" role="link" tabindex="0" aria-label="Open ${w.title} in a new tab"` : "";
     return `
       <article class="work-card reveal${open ? " is-link" : ""}"${a11y}>
         ${open ? '<span class="work-card__arrow" aria-hidden="true">↗</span>' : ""}
