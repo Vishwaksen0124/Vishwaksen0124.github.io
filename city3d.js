@@ -208,10 +208,12 @@ async function tryLoadModel() {
       const size = new THREE.Vector3(); box.getSize(size);
       const center = new THREE.Vector3(); box.getCenter(center);
       inner.position.sub(center);                  // recenter on origin
+      inner.position.y -= 0.46 * size.y;           // bbox is far taller than the
+                                                   // body — drop the body to origin
       const wrap = new THREE.Group();
       wrap.add(inner);
-      wrap.position.set(8, -1, -26);               // in front, right of frame
-      modelTargetScale = 10 / (size.y || 1);       // fit to ~10 units tall
+      wrap.position.set(5, -2, -19);               // close, right of frame
+      modelTargetScale = 78 / (size.y || 1);       // scale to the body, not the box
       wrap.scale.setScalar(0.0001);                // grows in on load
       modelGrow = 0;
       camera.add(wrap);
@@ -263,8 +265,8 @@ function frame(t) {
     model.scale.setScalar(modelTargetScale * e);
     model.rotation.y = Math.PI + p * Math.PI * 1.3 + Math.sin(t / 2600) * 0.12;
     model.rotation.z = bank * 0.012;
-    model.position.x = 8 - p * 3;
-    model.position.y = -1 + Math.sin(t / 2200) * 0.4;   // gentle float
+    model.position.x = 5 - p * 2;
+    model.position.y = -2 + Math.sin(t / 2200) * 0.4;   // gentle float
   }
   if (mixer) mixer.update(dt);
   renderer.render(scene, camera);
