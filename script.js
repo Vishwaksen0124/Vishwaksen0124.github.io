@@ -99,7 +99,6 @@ function initThemes() {
    lit, flickering windows. Tower tops are collected so Spidey
    can anchor his webs to real buildings.
    ============================================================ */
-const CITY = (window.CITY = window.CITY || { towers: [] });
 
 /* ============================================================
    The scene canvas — one rAF loop drawing:
@@ -116,133 +115,11 @@ function initScene() {
   let prevScroll = scrollY, svS = 0; // smoothed scroll velocity (px/frame)
   const mouse = { x: -9999, y: -9999 };
 
-  /* ---- Spider-Man swing physics ---- */
-  const G = 2400;
-  const spidey = REDUCED_MOTION ? null : {
-    mode: "swing", x: 0, y: 0, vx: 0, vy: 0,
-    ax: 0, ay: 0, L: 220, th: -0.95, om: 0, lastLine: 0
-  };
-
-  function anchorAhead(x, y) {
-    // prefer a real tower top ahead and above; otherwise a sky point
-    const c = CITY.towers.filter((t) => t.x > x + 120 && t.x < x + 480 && t.y < y - 90);
-    if (c.length) {
-      const t = c[Math.floor(Math.random() * c.length)];
-      return { x: t.x, y: t.y };
-    }
-    return { x: x + rnd(240, 380), y: Math.max(40, y - rnd(220, 300)) };
-  }
-
-  function resetSpidey() {
-    spidey.mode = "swing";
-    spidey.x = -40;
-    spidey.y = H * rnd(0.28, 0.42);
-    const a = anchorAhead(spidey.x, spidey.y + 120);
-    spidey.ax = a.x; spidey.ay = a.y;
-    const dx = spidey.x - a.x, dy = spidey.y - a.y;
-    spidey.L = Math.max(140, Math.hypot(dx, dy));
-    spidey.th = Math.atan2(dx, dy);
-    spidey.om = 0.8;
-  }
-
-  function stepSpidey(dt) {
-    if (spidey.mode === "swing") {
-      spidey.om += (-G / spidey.L) * Math.sin(spidey.th) * dt;
-      spidey.om *= 0.999;
-      spidey.th += spidey.om * dt;
-      spidey.x = spidey.ax + spidey.L * Math.sin(spidey.th);
-      spidey.y = spidey.ay + spidey.L * Math.cos(spidey.th);
-      // release on the forward upswing — momentum carries him into flight
-      if (spidey.th > 0.62 && spidey.om > 1.1) {
-        spidey.vx = spidey.L * spidey.om * Math.cos(spidey.th);
-        spidey.vy = -spidey.L * spidey.om * Math.sin(spidey.th);
-        spidey.mode = "fly";
-      }
-    } else {
-      spidey.vy += G * dt;
-      spidey.x += spidey.vx * dt;
-      spidey.y += spidey.vy * dt;
-      // falling again: fire a new web at the next building
-      if (spidey.vy > 60) {
-        const a = anchorAhead(spidey.x, spidey.y);
-        spidey.ax = a.x; spidey.ay = a.y;
-        const dx = spidey.x - a.x, dy = spidey.y - a.y;
-        spidey.L = Math.min(Math.max(Math.hypot(dx, dy), 150), 320);
-        spidey.th = Math.atan2(dx, dy);
-        const om = (spidey.vx * Math.cos(spidey.th) - spidey.vy * Math.sin(spidey.th)) / spidey.L;
-        spidey.om = Math.max(om, 0.9);
-        spidey.mode = "swing";
-      }
-    }
-    if (spidey.x > W + 60) resetSpidey();
-    if (spidey.y > H * 0.92) { spidey.y = H * 0.92; if (spidey.mode === "fly") spidey.vy = -Math.abs(spidey.vy) * 0.4; }
-  }
-
-  function drawSpiderFigure(x, y, ang, swingPose, scale = 1) {
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(ang);
-    ctx.scale(scale, scale);
-    // limbs
-    ctx.strokeStyle = THEME.spideyLimb;
-    ctx.lineWidth = 2.6;
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    if (swingPose) {
-      ctx.moveTo(2, -8); ctx.lineTo(5, -16); ctx.lineTo(3, -24);     // web arm up the line
-      ctx.moveTo(-2, -6); ctx.lineTo(-9, -2); ctx.lineTo(-13, 4);    // trailing arm
-      ctx.moveTo(0, 8); ctx.lineTo(8, 12); ctx.lineTo(7, 20);        // tucked legs
-      ctx.moveTo(-1, 8); ctx.lineTo(4, 15); ctx.lineTo(1, 22);
-    } else {
-      ctx.moveTo(2, -8); ctx.lineTo(10, -13); ctx.lineTo(17, -16);   // superman stretch
-      ctx.moveTo(-2, -7); ctx.lineTo(-10, -10); ctx.lineTo(-16, -8);
-      ctx.moveTo(1, 8); ctx.lineTo(9, 14); ctx.lineTo(14, 21);
-      ctx.moveTo(-1, 8); ctx.lineTo(-7, 15); ctx.lineTo(-10, 22);
-    }
-    ctx.stroke();
-    // torso + head
-    ctx.fillStyle = THEME.spideyBody;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 4.6, 8.6, swingPose ? 0.18 : 0.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(swingPose ? 1.5 : 5, -11.5, 4, 0, Math.PI * 2);
-    ctx.fill();
-    // eye glint
-    ctx.fillStyle = THEME.spideyGlint;
-    ctx.beginPath();
-    ctx.ellipse(swingPose ? 3 : 6.6, -12.2, 1.5, 1, -0.3, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
-
-  function drawSpidey() {
-    const s = spidey;
-    // web line while swinging
-    if (s.mode === "swing") {
-      ctx.strokeStyle = `rgba(${THEME.silk}, 0.75)`;
-      ctx.lineWidth = 1.1;
-      ctx.beginPath();
-      ctx.moveTo(s.ax, s.ay);
-      ctx.lineTo(s.x, s.y);
-      ctx.stroke();
-      ctx.fillStyle = `rgba(${THEME.silk}, 0.8)`;
-      ctx.beginPath();
-      ctx.arc(s.ax, s.ay, 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    const ang = s.mode === "swing"
-      ? Math.atan2(s.x - s.ax, -(s.ay - s.y)) * -1
-      : Math.atan2(s.vy, s.vx) * 0.25;
-    drawSpiderFigure(s.x, s.y, ang, s.mode === "swing");
-  }
-
   /* ---- silk node field ---- */
   function resize() {
     W = innerWidth; H = innerHeight;
     canvas.width = W * DPR; canvas.height = H * DPR;
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    if (spidey) resetSpidey();
   }
 
   function drawSplat(s, now) {
@@ -360,7 +237,6 @@ function initScene() {
     drawTrail(now);
     splats = splats.filter((s) => drawSplat(s, now));
     shots = shots.filter((s) => drawShot(s, now));
-    if (spidey) { stepSpidey(dt); drawSpidey(); }
     raf = requestAnimationFrame(frame);
   }
 
@@ -382,9 +258,10 @@ function initScene() {
 
   addEventListener("pointerdown", (e) => {
     if (REDUCED_MOTION) return;
-    // Spidey shoots the web from wherever he is right now
-    const from = spidey && spidey.x > 0 && spidey.x < W
-      ? { x: spidey.x, y: spidey.y }
+    // the 3D Spidey shoots the web from wherever he is on screen
+    const sp = window.SPIDEY_SCREEN;
+    const from = sp && sp.x > -100 && sp.x < W + 100 && sp.y > -100 && sp.y < H + 100
+      ? sp
       : { x: e.clientX < W / 2 ? -10 : W + 10, y: 60 };
     shots.push({ x0: from.x, y0: from.y, x1: e.clientX, y1: e.clientY, t0: performance.now() });
     if (shots.length > 4) shots.shift();
