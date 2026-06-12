@@ -1,32 +1,32 @@
 /* ============================================================
-   Vishwaksen Pujala — Spider-Verse comic-noir portfolio
-   Midnight NYC · Spidey red · electric blue · silk strands
+   Vishwaksen Pujala — Spider-Man: No Way Home portfolio
+   Cinematic black · Integrated-Suit red · gold webbing
    ============================================================ */
 
 :root {
-  --bg: #07090f;
-  --surface: #0d1120;
-  --surface-2: #121831;
-  --line: rgba(var(--silk-rgb), 0.14);
-  --text: #e8eaf2;
-  --muted: #9aa3b8;
-  --red: #e62429;
-  --red-bright: #ff3b41;
-  --red-rgb: 230, 36, 41;
-  --red-bright-rgb: 255, 59, 65;
-  --blue: #3d5afe;
-  --blue-soft: #7e93ff;
-  --blue-rgb: 61, 90, 254;
+  --bg: #09080b;
+  --surface: #16131a;
+  --surface-2: #201b26;
+  --line: rgba(var(--silk-rgb), 0.13);
+  --text: #f1ebe1;
+  --muted: #9a9189;
+  --red: #d8252b;
+  --red-bright: #f5434c;
+  --red-rgb: 216, 37, 43;
+  --red-bright-rgb: 245, 67, 76;
+  --blue: #c79433;          /* gold accent — the suit's webbing */
+  --blue-soft: #e9c469;
+  --blue-rgb: 199, 148, 51;
   --silk: rgba(var(--silk-rgb), 0.55);
-  --silk-rgb: 214, 222, 244;
-  --dusk-rgb: 2, 3, 8;
-  --nav-bg: rgba(7, 9, 15, 0.82);
-  --city-far: #101831;
-  --city-near: #04060c;
-  --city-window: #ffd66b;
-  --spidey-body: #e62429;
-  --spidey-limb: #c41e23;
-  --spidey-glint: #f3f5ff;
+  --silk-rgb: 228, 214, 190;
+  --dusk-rgb: 3, 2, 2;
+  --nav-bg: rgba(9, 8, 11, 0.84);
+  --city-far: #1a1626;
+  --city-near: #0a0810;
+  --city-window: #ffcf76;
+  --spidey-body: #d8252b;
+  --spidey-limb: #19181c;
+  --spidey-glint: #ffe7b4;
   --display: "Anton", "Arial Narrow", sans-serif;
   --body: "Hanken Grotesk", sans-serif;
   --mono: "JetBrains Mono", monospace;
@@ -323,7 +323,7 @@ main, .nav, .foot { position: relative; z-index: 2; }
   inset: 2px;
   border-radius: 50%;
 }
-.theme-dot[data-set-theme="classic"]::after { background: linear-gradient(135deg, #e62429 50%, #3d5afe 50%); }
+.theme-dot[data-set-theme="classic"]::after { background: linear-gradient(135deg, #d8252b 50%, #c79433 50%); }
 .theme-dot[data-set-theme="miles"]::after { background: linear-gradient(135deg, #c026ff 50%, #00e5ff 50%); }
 .theme-dot[data-set-theme="symbiote"]::after { background: linear-gradient(135deg, #39ff14 50%, #101510 50%); }
 .theme-dot[data-set-theme="bugle"]::after { background: linear-gradient(135deg, #f1e8d4 50%, #c81d23 50%); }

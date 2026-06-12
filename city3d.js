@@ -263,7 +263,7 @@ function frame(t) {
     if (modelGrow < 1) modelGrow = Math.min(1, modelGrow + dt / 1.1);
     const e = 1 - Math.pow(1 - modelGrow, 3);
     model.scale.setScalar(modelTargetScale * e);
-    model.rotation.y = Math.PI + p * Math.PI * 1.3 + Math.sin(t / 2600) * 0.12;
+    model.rotation.y = 0.35 + p * Math.PI * 0.8 + Math.sin(t / 2600) * 0.12;
     model.rotation.z = bank * 0.012;
     model.position.x = 5 - p * 2;
     model.position.y = -2 + Math.sin(t / 2200) * 0.4;   // gentle float
