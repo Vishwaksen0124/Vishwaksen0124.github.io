@@ -533,6 +533,7 @@ main {
    carrying its own red/blue misprint shadow */
 .hero__name.letterized::before,
 .hero__name.letterized::after { content: none; }
+.hero__name .word { display: inline-block; white-space: nowrap; }
 .hero__name .ltr {
   display: inline-block;
   transform-origin: 50% 0;

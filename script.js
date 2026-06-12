@@ -452,11 +452,14 @@ function letterize() {
   const text = el.textContent;
   el.removeAttribute("data-text");
   el.classList.add("letterized");
-  el.innerHTML = [...text].map((ch, i) =>
-    ch === " "
-      ? " "
-      : `<span class="ltr" style="animation-delay:${(0.25 + i * 0.045).toFixed(2)}s">${ch}</span>`
-  ).join("");
+  // letters are inline-block, which would allow mid-word line breaks —
+  // so each word gets an unbreakable wrapper and lines only break at spaces
+  let i = 0;
+  el.innerHTML = text.split(" ").map((word) =>
+    `<span class="word">${[...word].map((ch) =>
+      `<span class="ltr" style="animation-delay:${(0.25 + i++ * 0.045).toFixed(2)}s">${ch}</span>`
+    ).join("")}</span>`
+  ).join(" ");
 }
 
 /* ============================================================
