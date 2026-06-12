@@ -30,8 +30,6 @@
   --display: "Anton", "Arial Narrow", sans-serif;
   --body: "Hanken Grotesk", sans-serif;
   --mono: "JetBrains Mono", monospace;
-  --shadow-pop: 6px 6px 0 rgba(var(--red-rgb), 0.85);
-  --shadow-pop-blue: -6px 6px 0 rgba(var(--blue-rgb), 0.7);
 }
 
 /* ---------- Spider-Verse themes ---------- */
@@ -225,41 +223,6 @@ a, button, .is-link, .chip {
 }
 
 main, .nav, .foot { position: relative; z-index: 2; }
-
-/* ---------- scroll strand (spider rappelling) ---------- */
-.strand {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 26px;
-  width: 2px;
-  z-index: 4;
-  pointer-events: none;
-}
-.strand__track {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, transparent, var(--line) 12%, var(--line) 88%, transparent);
-}
-.strand__line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 0;
-  background: linear-gradient(to bottom, transparent, var(--red) 30%, var(--red-bright));
-  box-shadow: 0 0 8px rgba(var(--red-rgb), 0.6);
-}
-.strand__spider {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  transform: translate(-50%, -50%);
-  color: var(--red-bright);
-  filter: drop-shadow(0 0 6px rgba(var(--red-rgb), 0.55));
-  transition: transform 0.15s ease-out;
-}
-@media (max-width: 760px) { .strand { display: none; } }
 
 /* ---------- nav ---------- */
 .nav {
@@ -1098,10 +1061,6 @@ main {
   stroke: rgba(var(--silk-rgb), 0.34);
   stroke-width: 1.5;
 }
-.swing-glint {
-  fill: var(--red-bright);
-  filter: drop-shadow(0 0 7px rgba(var(--red-bright-rgb), 0.9));
-}
 .swing-node__ring {
   fill: none;
   stroke: rgba(var(--silk-rgb), 0.25);
@@ -1147,7 +1106,9 @@ main { will-change: transform; }
   .work-card, .exp, .skill-group, .role-row, .sec-head,
   .about__text, .about__side,
   .contact__lead, .contact__email, .contact__row {
-    animation: scrub-rise linear both;
+    /* fill backwards only: once the entry range completes the animation
+       releases the element, so hover transforms work again */
+    animation: scrub-rise linear backwards;
     animation-timeline: view();
     animation-range: entry 5% entry 85%;
   }

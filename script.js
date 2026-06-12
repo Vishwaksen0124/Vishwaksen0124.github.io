@@ -517,7 +517,11 @@ function initScene() {
   }
 
   resize();
-  addEventListener("resize", () => { resize(); buildSkyline(); });
+  let rsT;
+  addEventListener("resize", () => {
+    clearTimeout(rsT);
+    rsT = setTimeout(() => { resize(); buildSkyline(); }, 180);
+  });
   addEventListener("pointermove", (e) => {
     mouse.x = e.clientX; mouse.y = e.clientY;
     const last = trail[trail.length - 1];
@@ -593,7 +597,7 @@ function initSwingPath() {
     if (svg) svg.remove();
     docH = document.documentElement.scrollHeight;
     const W = innerWidth;
-    if (W < 760) return;
+    if (W < 760) { path = null; SWING.tip = null; return; }
     const sections = [...document.querySelectorAll("main .section")];
     if (!sections.length) return;
 
@@ -709,29 +713,6 @@ function initScrollSkew() {
 }
 
 /* ============================================================
-   Scroll strand — the spider rappels down as you read.
-   ============================================================ */
-function initStrand() {
-  const line = document.getElementById("strand-line");
-  const spider = document.getElementById("strand-spider");
-  if (!line || !spider) return;
-  let ticking = false;
-  const update = () => {
-    const max = document.documentElement.scrollHeight - innerHeight;
-    const p = max > 0 ? Math.min(1, scrollY / max) : 0;
-    const y = p * innerHeight;
-    line.style.height = y + "px";
-    spider.style.top = y + "px";
-    ticking = false;
-  };
-  addEventListener("scroll", () => {
-    if (!ticking) { ticking = true; requestAnimationFrame(update); }
-  }, { passive: true });
-  addEventListener("resize", update);
-  update();
-}
-
-/* ============================================================
    Corner webs — a quarter spider-web stroke-drawn into the
    top-right of every section as it scrolls into view.
    ============================================================ */
@@ -836,7 +817,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initReveal();
   initNav();
   initScene();
-  initStrand();
   initSwingPath();
   initScrollSkew();
   document.getElementById("year").textContent = new Date().getFullYear();
