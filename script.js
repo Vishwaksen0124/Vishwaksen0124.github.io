@@ -103,6 +103,8 @@ function initThemes() {
    can anchor his webs to real buildings.
    ============================================================ */
 const CITY = { towers: [] };
+const SWING = { tip: null };   // scroll tip of the page web line (doc coords)
+const EFFECTS = {};            // scene hooks usable by other systems
 
 function buildSkyline() {
   const holder = document.getElementById("city");
@@ -173,7 +175,8 @@ function initScene() {
   const canvas = document.getElementById("web-canvas");
   const ctx = canvas.getContext("2d");
   const DPR = Math.min(devicePixelRatio || 1, 2);
-  let W = 0, H = 0, nodes = [], splats = [], shots = [], trail = [];
+  let W = 0, H = 0, nodes = [], splats = [], shots = [], trail = [], streaks = [];
+  let prevScroll = scrollY, svS = 0; // smoothed scroll velocity (px/frame)
   const mouse = { x: -9999, y: -9999 };
   const LINK_DIST = 170, MOUSE_DIST = 200;
 
@@ -239,28 +242,11 @@ function initScene() {
     if (spidey.y > H * 0.92) { spidey.y = H * 0.92; if (spidey.mode === "fly") spidey.vy = -Math.abs(spidey.vy) * 0.4; }
   }
 
-  function drawSpidey() {
-    const s = spidey;
+  function drawSpiderFigure(x, y, ang, swingPose, scale = 1) {
     ctx.save();
-    // web line while swinging
-    if (s.mode === "swing") {
-      ctx.strokeStyle = `rgba(${THEME.silk}, 0.75)`;
-      ctx.lineWidth = 1.1;
-      ctx.beginPath();
-      ctx.moveTo(s.ax, s.ay);
-      ctx.lineTo(s.x, s.y);
-      ctx.stroke();
-      ctx.fillStyle = `rgba(${THEME.silk}, 0.8)`;
-      ctx.beginPath();
-      ctx.arc(s.ax, s.ay, 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.translate(s.x, s.y);
-    const ang = s.mode === "swing"
-      ? Math.atan2(s.x - s.ax, -(s.ay - s.y)) * -1
-      : Math.atan2(s.vy, s.vx) * 0.25;
+    ctx.translate(x, y);
     ctx.rotate(ang);
-    const swingPose = s.mode === "swing";
+    ctx.scale(scale, scale);
     // limbs
     ctx.strokeStyle = THEME.spideyLimb;
     ctx.lineWidth = 2.6;
@@ -294,6 +280,48 @@ function initScene() {
     ctx.restore();
   }
 
+  function drawSpidey() {
+    const s = spidey;
+    // web line while swinging
+    if (s.mode === "swing") {
+      ctx.strokeStyle = `rgba(${THEME.silk}, 0.75)`;
+      ctx.lineWidth = 1.1;
+      ctx.beginPath();
+      ctx.moveTo(s.ax, s.ay);
+      ctx.lineTo(s.x, s.y);
+      ctx.stroke();
+      ctx.fillStyle = `rgba(${THEME.silk}, 0.8)`;
+      ctx.beginPath();
+      ctx.arc(s.ax, s.ay, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    const ang = s.mode === "swing"
+      ? Math.atan2(s.x - s.ax, -(s.ay - s.y)) * -1
+      : Math.atan2(s.vy, s.vx) * 0.25;
+    drawSpiderFigure(s.x, s.y, ang, s.mode === "swing");
+  }
+
+  /* ---- the rider: mini Spidey rappelling down the page's web
+     line, hanging at the scroll tip, leaning with your speed ---- */
+  function drawRider(now) {
+    if (!SWING.tip) return;
+    const ty = SWING.tip.y - scrollY;
+    if (ty < -60 || ty > H + 60) return;
+    const lean = Math.max(-0.7, Math.min(0.7, -svS * 0.05));
+    const sway = Math.sin(now / 560) * (0.1 + Math.min(Math.abs(svS) * 0.015, 0.35));
+    const th = lean + sway;
+    const L = 30;
+    const rx = SWING.tip.x + Math.sin(th) * L;
+    const ry = ty + Math.cos(th) * L;
+    ctx.strokeStyle = `rgba(${THEME.silk}, 0.85)`;
+    ctx.lineWidth = 1.1;
+    ctx.beginPath();
+    ctx.moveTo(SWING.tip.x, ty);
+    ctx.lineTo(rx, ry);
+    ctx.stroke();
+    drawSpiderFigure(rx, ry, th, true, 0.78);
+  }
+
   /* ---- silk node field ---- */
   function resize() {
     W = innerWidth; H = innerHeight;
@@ -305,7 +333,8 @@ function initScene() {
       y: Math.random() * H,
       vx: rnd(-0.11, 0.11),
       vy: rnd(-0.11, 0.11),
-      r: rnd(0.8, 2.2)
+      r: rnd(0.8, 2.2),
+      z: rnd(0.25, 1) // depth: far strands barely move with scroll, near ones stream past
     }));
     if (spidey) resetSpidey();
   }
@@ -357,17 +386,18 @@ function initScene() {
     return true;
   }
 
-  function spawnSplat(x, y) {
+  function spawnSplat(x, y, scale = 1) {
     const n = 9 + Math.floor(Math.random() * 3);
     splats.push({
       x, y, t0: performance.now(),
       spokes: Array.from({ length: n }, (_, i) => ({
         a: (i / n) * Math.PI * 2 + Math.random() * 0.3,
-        len: rnd(46, 86)
+        len: rnd(46, 86) * scale
       }))
     });
     if (splats.length > 6) splats.shift();
   }
+  EFFECTS.splat = spawnSplat;
 
   function drawShot(s, now) {
     // a web line zipping from Spidey to the click point
@@ -406,8 +436,18 @@ function initScene() {
     const dt = Math.min((now - lastT) / 1000 || 0.016, 0.033);
     lastT = now;
     ctx.clearRect(0, 0, W, H);
+
+    // scroll velocity: raw this frame + smoothed for effects
+    const svRaw = scrollY - prevScroll;
+    prevScroll = scrollY;
+    svS += (svRaw - svS) * 0.12;
+    const speed = Math.abs(svS);
+
     for (const n of nodes) {
       n.x += n.vx; n.y += n.vy;
+      // depth parallax: the field streams past as you scroll,
+      // near strands (high z) faster than far ones
+      n.y -= svRaw * n.z * 0.55;
       if (n.x < -20) n.x = W + 20; else if (n.x > W + 20) n.x = -20;
       if (n.y < -20) n.y = H + 20; else if (n.y > H + 20) n.y = -20;
       const dx = mouse.x - n.x, dy = mouse.y - n.y;
@@ -424,16 +464,55 @@ function initScene() {
         if (d < LINK_DIST) drawStrand(a, b, 1 - d / LINK_DIST);
       }
     }
-    ctx.fillStyle = `rgba(${THEME.silk}, 0.5)`;
+    // nodes render as dots at rest, stretching into motion streaks
+    // proportional to scroll speed and their depth
     for (const n of nodes) {
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-      ctx.fill();
+      const stretch = svS * n.z * 1.7;
+      const rr = n.r * (0.5 + n.z * 0.7);
+      if (Math.abs(stretch) > 4) {
+        ctx.strokeStyle = `rgba(${THEME.silk}, ${0.4 * n.z})`;
+        ctx.lineWidth = rr;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(n.x, n.y);
+        ctx.lineTo(n.x, n.y + stretch);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = `rgba(${THEME.silk}, 0.5)`;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, rr, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
+    // comic speed-lines on hard scrolls, hugging the page edges
+    if (speed > 14 && Math.random() < 0.6) {
+      const edge = Math.random() < 0.5;
+      streaks.push({
+        x: edge ? rnd(0, W * 0.22) : rnd(W * 0.78, W),
+        y: rnd(-40, H),
+        len: rnd(60, 150) * Math.sign(svS),
+        t0: now
+      });
+      if (streaks.length > 26) streaks.shift();
+    }
+    streaks = streaks.filter((s) => {
+      const age = (now - s.t0) / 300;
+      if (age >= 1) return false;
+      s.y -= svS * 1.4;
+      ctx.strokeStyle = `rgba(${THEME.acc}, ${0.22 * (1 - age)})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(s.x, s.y + s.len * (1 - age * 0.4));
+      ctx.stroke();
+      return true;
+    });
+
     drawTrail(now);
     splats = splats.filter((s) => drawSplat(s, now));
     shots = shots.filter((s) => drawShot(s, now));
     if (spidey) { stepSpidey(dt); drawSpidey(); }
+    drawRider(now);
     raf = requestAnimationFrame(frame);
   }
 
@@ -508,7 +587,7 @@ function letterize() {
    ============================================================ */
 function initSwingPath() {
   if (REDUCED_MOTION) return;
-  let svg, path, glint, nodes = [], nodeLens = [], total = 0, docH = 0;
+  let svg, path, nodes = [], nodeLens = [], nodePts = [], lit = [], primed = false, total = 0, docH = 0;
 
   function build() {
     if (svg) svg.remove();
@@ -543,17 +622,18 @@ function initSwingPath() {
         <circle class="swing-node__ring" r="9"/>
         <circle class="swing-node__dot" r="3"/>
       </g>`).join("")}
-      <circle class="swing-glint" r="3.5"/>`;
+`;
     document.body.appendChild(svg);
 
     path = svg.querySelector(".swing-path__line");
-    glint = svg.querySelector(".swing-glint");
     nodes = [...svg.querySelectorAll(".swing-node")];
+    nodePts = pts.slice(1, -1);
+    lit = nodes.map(() => false);
+    primed = false;
     total = path.getTotalLength();
     path.style.strokeDasharray = total;
 
     // length along the path at which each node sits
-    const nodePts = pts.slice(1, -1);
     nodeLens = nodePts.map(() => 0);
     const best = nodePts.map(() => Infinity);
     for (let l = 0; l <= total; l += 24) {
@@ -571,9 +651,17 @@ function initSwingPath() {
     const tip = Math.min(total, Math.max(0, total * ((scrollY + innerHeight * 0.6) / docH)));
     path.style.strokeDashoffset = total - tip;
     const p = path.getPointAtLength(tip);
-    glint.setAttribute("cx", p.x);
-    glint.setAttribute("cy", p.y);
-    nodes.forEach((n, i) => n.classList.toggle("lit", tip >= nodeLens[i]));
+    SWING.tip = { x: p.x, y: p.y }; // doc coords; the canvas rider hangs here
+    nodes.forEach((n, i) => {
+      const on = tip >= nodeLens[i];
+      // a node igniting fires a web burst into the scene canvas
+      if (on && !lit[i] && primed && EFFECTS.splat) {
+        EFFECTS.splat(nodePts[i].x, nodePts[i].y - scrollY, 0.55);
+      }
+      lit[i] = on;
+      n.classList.toggle("lit", on);
+    });
+    primed = true;
   }
 
   let ticking = false;
