@@ -15,6 +15,7 @@ const canvas = document.getElementById("city3d");
 let renderer, scene, camera, buildMesh, windowPts, neonPts, fieldPts, strands;
 let model, mixer, rimLight, moonLight, ambient;
 let sigils = [], embers, sigilMat, emberMat;
+let beacons, ground, spires;
 let W = innerWidth, H = innerHeight;
 const tall = [];
 const mouse = { x: 0, y: 0 };
@@ -164,13 +165,40 @@ function build() {
   );
   scene.add(windowPts);
 
-  // a scatter of neon (Spider-Verse) accent windows
+  // a scatter of neon accent windows
   neonPts = new THREE.Points(
     new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(neonPos, 3)),
     new THREE.PointsMaterial({ color: c.accent, size: 2.4, sizeAttenuation: true, transparent: true,
       opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false })
   );
   scene.add(neonPts);
+
+  // wet reflective street — catches the city lights and magic glow
+  ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(1800, 1800),
+    new THREE.MeshStandardMaterial({ color: c.near.clone().multiplyScalar(0.4),
+      metalness: 0.9, roughness: 0.42, envMapIntensity: 1.3 })
+  );
+  ground.rotation.x = -Math.PI / 2;
+  scene.add(ground);
+
+  // rooftop spires + blinking aircraft beacons on the tall towers
+  const spirePts = [], beaconPos = [];
+  for (const tw of tall) {
+    spirePts.push(tw.x, tw.y, tw.z, tw.x, tw.y + 16, tw.z);
+    beaconPos.push(tw.x, tw.y + 16, tw.z);
+  }
+  spires = new THREE.LineSegments(
+    new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(spirePts, 3)),
+    new THREE.LineBasicMaterial({ color: c.silk, transparent: true, opacity: 0.28 })
+  );
+  scene.add(spires);
+  beacons = new THREE.Points(
+    new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(beaconPos, 3)),
+    new THREE.PointsMaterial({ color: c.accent, size: 3.4, sizeAttenuation: true, transparent: true,
+      opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false })
+  );
+  scene.add(beacons);
 
   // silk motes drifting high above the street
   const motes = [];
@@ -252,6 +280,9 @@ function retheme() {
   const gold = new THREE.Color(cssVar("--blue-soft", "#e9c469"));
   sigilMat.color.copy(gold);
   emberMat.color.copy(gold);
+  beacons.material.color.copy(c.accent);
+  spires.material.color.copy(c.silk);
+  ground.material.color.copy(c.near.clone().multiplyScalar(0.4));
 }
 
 /* real Spider-Man model, lazy-loaded from a CDN after first paint so
@@ -261,9 +292,10 @@ const DEFAULT_MODEL_URL =
   "https://cdn.jsdelivr.net/gh/victor-kiss/spider-man-3DUI@main/public/models/spider-man_spider-man_no_way_home.glb";
 let modelGrow = 0, modelTargetScale = 1;
 
-// the model ships with 19 rigged clips — give each section its own
-// (in-place hero poses; locomotion clips would drift him off-frame)
-const SECTION_CLIPS = ["idle", "wait", "skill01", "skill02", "skill03", "skill04", "skill05-01", "skill06"];
+// only the natural, in-place clips — idle/wait read like real movie
+// breathing-and-shifting; the skill/atk/dash clips are game combat
+// moves that look unrealistic, so we avoid them
+const SECTION_CLIPS = ["idle", "wait", "idle", "wait", "idle", "wait", "idle", "wait"];
 let actions = {}, currentAction = null;
 
 function clipFor(idx) {
@@ -357,16 +389,18 @@ function frame(t) {
   }
   ea.needsUpdate = true;
 
+  // rooftop beacons blink
+  beacons.material.opacity = 0.35 + 0.55 * Math.abs(Math.sin(t / 620));
+
   if (model) {
     // grow in on load, then move in step with the page: turns to face
     // you as you scroll, drifts across, leans with the section bank
     if (modelGrow < 1) modelGrow = Math.min(1, modelGrow + dt / 1.1);
     const e = 1 - Math.pow(1 - modelGrow, 3);
     model.scale.setScalar(modelTargetScale * e);
-    model.rotation.y = 0.35 + p * Math.PI * 0.8 + Math.sin(t / 2600) * 0.12;
-    model.rotation.z = bank * 0.012;
-    model.position.x = 5 - p * 2;
-    model.position.y = -2 + Math.sin(t / 2200) * 0.4;   // gentle float
+    model.rotation.y = 0.4 + Math.sin(t / 3200) * 0.07;  // steady 3/4 to camera
+    model.position.x = 5 - p * 1.2;
+    model.position.y = -2 + Math.sin(t / 2400) * 0.3;    // subtle breathing float
   }
   if (mixer) mixer.update(dt);
   renderer.render(scene, camera);
