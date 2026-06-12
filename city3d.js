@@ -5,13 +5,14 @@
    camera down the avenue; the mouse banks it. No character —
    the city itself is the show.
    ============================================================ */
-import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const canvas = document.getElementById("city3d");
 
 let renderer, scene, camera, buildMesh, windowPts, neonPts, fieldPts, strands;
-let model, mixer;
+let model, mixer, rimLight, moonLight, ambient;
 let W = innerWidth, H = innerHeight;
 const tall = [];
 const mouse = { x: 0, y: 0 };
@@ -59,14 +60,15 @@ function build() {
   scene.fog = new THREE.FogExp2(c.bg, 0.0026);
   camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 1500);
 
-  // moonlight + a warm and a cool rim so faces read as vivid volumes
-  const moon = new THREE.DirectionalLight(c.silk.clone(), 2.6);
-  moon.position.set(0.5, 1, 0.4);
-  scene.add(moon);
-  const rim = new THREE.DirectionalLight(c.accent.clone(), 0.9);
-  rim.position.set(-0.7, 0.3, -0.5);
-  scene.add(rim);
-  scene.add(new THREE.AmbientLight(c.bg.clone().lerp(c.silk, 0.6), 1.7));
+  // moonlight + a theme-accent rim so the city AND model read in-theme
+  moonLight = new THREE.DirectionalLight(c.silk.clone(), 2.6);
+  moonLight.position.set(0.5, 1, 0.4);
+  scene.add(moonLight);
+  rimLight = new THREE.DirectionalLight(c.accent.clone(), 1.1);
+  rimLight.position.set(-0.7, 0.3, -0.5);
+  scene.add(rimLight);
+  ambient = new THREE.AmbientLight(c.bg.clone().lerp(c.silk, 0.6), 1.7);
+  scene.add(ambient);
 
   // instanced canyon lining the avenue, receding into -z
   const COUNT = innerWidth < 760 ? 130 : 220;
@@ -137,7 +139,10 @@ function build() {
   }
   scene.add(strands);
 
-  tryLoadModel();
+  // lazy-load the model after first paint so it never blocks the city
+  const start = () => tryLoadModel();
+  if ("requestIdleCallback" in window) requestIdleCallback(start, { timeout: 2500 });
+  else setTimeout(start, 1200);
 }
 
 function retheme() {
@@ -148,46 +153,76 @@ function retheme() {
   neonPts.material.color.copy(c.accent);
   fieldPts.material.color.copy(c.silk);
   strands.children.forEach((s) => s.material.color.copy(c.silk));
+  // model + city pick up the active theme through the lights
+  rimLight.color.copy(c.accent);
+  moonLight.color.copy(c.silk);
+  ambient.color.copy(c.bg.clone().lerp(c.silk, 0.6));
 }
 
-/* optional real model — drop assets/spiderman.glb (or set
-   window.SPIDEY_MODEL_URL) and it loads at runtime, animations too.
-   No copyrighted asset ships in the repo; the city is the fallback. */
+/* real Spider-Man model, lazy-loaded from a CDN after first paint so
+   it never blocks the page; nothing copyrighted ships in the repo.
+   Override with window.SPIDEY_MODEL_URL (e.g. a licensed local .glb). */
+const DEFAULT_MODEL_URL =
+  "https://cdn.jsdelivr.net/gh/victor-kiss/spider-man-3DUI@main/public/models/spider-man_spider-man_no_way_home.glb";
+let modelGrow = 0, modelTargetScale = 1;
+
+// the model ships with 19 rigged clips — give each section its own
+// (in-place hero poses; locomotion clips would drift him off-frame)
+const SECTION_CLIPS = ["idle", "wait", "skill01", "skill02", "skill03", "skill04", "skill05-01", "skill06"];
+let actions = {}, currentAction = null;
+
+function clipFor(idx) {
+  const tok = SECTION_CLIPS[((idx % SECTION_CLIPS.length) + SECTION_CLIPS.length) % SECTION_CLIPS.length];
+  const name = Object.keys(actions).find((n) => n.includes("@" + tok + "|")) ||
+               Object.keys(actions).find((n) => n.includes("@" + tok));
+  return name ? actions[name] : null;
+}
+function playSection(idx) {
+  const next = clipFor(idx);
+  if (!next || next === currentAction) return;
+  next.reset().setEffectiveWeight(1).fadeIn(0.5).play();
+  if (currentAction) currentAction.fadeOut(0.5);
+  currentAction = next;
+}
+
 async function tryLoadModel() {
-  const url = window.SPIDEY_MODEL_URL || "assets/spiderman.glb";
+  const url = window.SPIDEY_MODEL_URL || DEFAULT_MODEL_URL;
   try {
-    const res = await fetch(url, { method: "HEAD" });
-    if (!res.ok) return;
-    const { GLTFLoader } = await import("https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js");
-    new GLTFLoader().load(url, (gltf) => {
-      model = gltf.scene;
-      const box = new THREE.Box3().setFromObject(model);
+    const loader = new GLTFLoader();
+    loader.load(url, (gltf) => {
+      const inner = gltf.scene;
+      const box = new THREE.Box3().setFromObject(inner);
       const size = new THREE.Vector3(); box.getSize(size);
       const center = new THREE.Vector3(); box.getCenter(center);
-      model.position.sub(center);                 // recenter
+      inner.position.sub(center);                  // recenter on origin
       const wrap = new THREE.Group();
-      wrap.add(model);
-      wrap.scale.setScalar(9 / (size.y || 1));    // fit to a ~9u height
-      wrap.position.set(9, -1, -26);              // hang in front, right of frame
+      wrap.add(inner);
+      wrap.position.set(8, -1, -26);               // in front, right of frame
+      modelTargetScale = 10 / (size.y || 1);       // fit to ~10 units tall
+      wrap.scale.setScalar(0.0001);                // grows in on load
+      modelGrow = 0;
       camera.add(wrap);
       scene.add(camera);
       model = wrap;
       if (gltf.animations && gltf.animations.length) {
-        mixer = new THREE.AnimationMixer(gltf.scene);
-        mixer.clipAction(gltf.animations[0]).play();
+        mixer = new THREE.AnimationMixer(inner);
+        actions = {};
+        gltf.animations.forEach((c) => { actions[c.name] = mixer.clipAction(c); });
+        playSection(activeSection < 0 ? 0 : activeSection);
       }
-    });
+    }, undefined, () => { /* load failed — city carries on */ });
   } catch (e) { /* keep the city */ }
 }
 
-/* gentle per-section camera bank so each section feels staged */
-let sections = [], bank = 0, bankTarget = 0;
+/* track the active section: camera bank + the model's animation clip */
+let sections = [], bank = 0, bankTarget = 0, activeSection = -1;
 function sectionBank() {
   if (!sections.length) sections = [...document.querySelectorAll("#hero, main .section")];
   const mid = scrollY + innerHeight * 0.5;
   let idx = 0;
   for (let i = 0; i < sections.length; i++) if (sections[i].offsetTop <= mid) idx = i;
   bankTarget = (idx % 2 ? 1 : -1) * (10 + (idx % 3) * 5);
+  if (idx !== activeSection) { activeSection = idx; if (mixer) playSection(idx); }
 }
 
 let raf, lastT = 0;
@@ -207,7 +242,17 @@ function frame(t) {
   camera.lookAt(camera.position.x * 0.3 + bank, 28, cz - 200);
 
   fieldPts.rotation.y = t / 90000;
-  if (model) model.rotation.y = Math.sin(t / 2400) * 0.5;   // gentle turntable
+  if (model) {
+    // grow in on load, then move in step with the page: turns to face
+    // you as you scroll, drifts across, leans with the section bank
+    if (modelGrow < 1) modelGrow = Math.min(1, modelGrow + dt / 1.1);
+    const e = 1 - Math.pow(1 - modelGrow, 3);
+    model.scale.setScalar(modelTargetScale * e);
+    model.rotation.y = Math.PI + p * Math.PI * 1.3 + Math.sin(t / 2600) * 0.12;
+    model.rotation.z = bank * 0.012;
+    model.position.x = 8 - p * 3;
+    model.position.y = -1 + Math.sin(t / 2200) * 0.4;   // gentle float
+  }
   if (mixer) mixer.update(dt);
   renderer.render(scene, camera);
   raf = requestAnimationFrame(frame);
