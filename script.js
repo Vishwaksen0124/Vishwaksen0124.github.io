@@ -103,8 +103,6 @@ function initThemes() {
    can anchor his webs to real buildings.
    ============================================================ */
 const CITY = { towers: [] };
-const SWING = { tip: null };   // scroll tip of the page web line (doc coords)
-const EFFECTS = {};            // scene hooks usable by other systems
 
 function buildSkyline() {
   const holder = document.getElementById("city");
@@ -301,27 +299,6 @@ function initScene() {
     drawSpiderFigure(s.x, s.y, ang, s.mode === "swing");
   }
 
-  /* ---- the rider: mini Spidey rappelling down the page's web
-     line, hanging at the scroll tip, leaning with your speed ---- */
-  function drawRider(now) {
-    if (!SWING.tip) return;
-    const ty = SWING.tip.y - scrollY;
-    if (ty < -60 || ty > H + 60) return;
-    const lean = Math.max(-0.7, Math.min(0.7, -svS * 0.05));
-    const sway = Math.sin(now / 560) * (0.1 + Math.min(Math.abs(svS) * 0.015, 0.35));
-    const th = lean + sway;
-    const L = 30;
-    const rx = SWING.tip.x + Math.sin(th) * L;
-    const ry = ty + Math.cos(th) * L;
-    ctx.strokeStyle = `rgba(${THEME.silk}, 0.85)`;
-    ctx.lineWidth = 1.1;
-    ctx.beginPath();
-    ctx.moveTo(SWING.tip.x, ty);
-    ctx.lineTo(rx, ry);
-    ctx.stroke();
-    drawSpiderFigure(rx, ry, th, true, 0.78);
-  }
-
   /* ---- silk node field ---- */
   function resize() {
     W = innerWidth; H = innerHeight;
@@ -397,7 +374,6 @@ function initScene() {
     });
     if (splats.length > 6) splats.shift();
   }
-  EFFECTS.splat = spawnSplat;
 
   function drawShot(s, now) {
     // a web line zipping from Spidey to the click point
@@ -512,7 +488,6 @@ function initScene() {
     splats = splats.filter((s) => drawSplat(s, now));
     shots = shots.filter((s) => drawShot(s, now));
     if (spidey) { stepSpidey(dt); drawSpidey(); }
-    drawRider(now);
     raf = requestAnimationFrame(frame);
   }
 
@@ -581,104 +556,6 @@ function letterize() {
       `<span class="ltr" style="animation-delay:${(0.25 + i++ * 0.045).toFixed(2)}s">${ch}</span>`
     ).join("")}</span>`
   ).join(" ");
-}
-
-/* ============================================================
-   The swing line — one continuous silk thread weaving down the
-   whole document through every section, drawn by your scroll.
-   A glowing tip rides the curve; a web node ignites at each
-   section as the line reaches it.
-   ============================================================ */
-function initSwingPath() {
-  if (REDUCED_MOTION) return;
-  let svg, path, nodes = [], nodeLens = [], nodePts = [], lit = [], primed = false, total = 0, docH = 0;
-
-  function build() {
-    if (svg) svg.remove();
-    docH = document.documentElement.scrollHeight;
-    const W = innerWidth;
-    if (W < 760) { path = null; SWING.tip = null; return; }
-    const sections = [...document.querySelectorAll("main .section")];
-    if (!sections.length) return;
-
-    // anchor points weave left-right, one per section
-    const pts = [{ x: W * 0.5, y: 24 }];
-    sections.forEach((sec, i) => {
-      pts.push({ x: W * (i % 2 ? 0.94 : 0.06), y: sec.offsetTop + 110 });
-    });
-    pts.push({ x: W * 0.5, y: docH - 60 });
-
-    let d = `M ${pts[0].x} ${pts[0].y}`;
-    for (let i = 1; i < pts.length; i++) {
-      const a = pts[i - 1], b = pts[i];
-      const ym = (a.y + b.y) / 2;
-      d += ` C ${a.x} ${ym}, ${b.x} ${ym}, ${b.x} ${b.y}`;
-    }
-
-    svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("class", "swing-path");
-    svg.setAttribute("width", W);
-    svg.setAttribute("height", docH);
-    svg.setAttribute("viewBox", `0 0 ${W} ${docH}`);
-    svg.innerHTML = `
-      <path class="swing-path__line" d="${d}"/>
-      ${pts.slice(1, -1).map((p) => `<g class="swing-node" transform="translate(${p.x} ${p.y})">
-        <circle class="swing-node__ring" r="9"/>
-        <circle class="swing-node__dot" r="3"/>
-      </g>`).join("")}
-`;
-    document.body.appendChild(svg);
-
-    path = svg.querySelector(".swing-path__line");
-    nodes = [...svg.querySelectorAll(".swing-node")];
-    nodePts = pts.slice(1, -1);
-    lit = nodes.map(() => false);
-    primed = false;
-    total = path.getTotalLength();
-    path.style.strokeDasharray = total;
-
-    // length along the path at which each node sits
-    nodeLens = nodePts.map(() => 0);
-    const best = nodePts.map(() => Infinity);
-    for (let l = 0; l <= total; l += 24) {
-      const p = path.getPointAtLength(l);
-      nodePts.forEach((np, i) => {
-        const dd = (p.x - np.x) ** 2 + (p.y - np.y) ** 2;
-        if (dd < best[i]) { best[i] = dd; nodeLens[i] = l; }
-      });
-    }
-    update();
-  }
-
-  function update() {
-    if (!path) return;
-    const tip = Math.min(total, Math.max(0, total * ((scrollY + innerHeight * 0.6) / docH)));
-    path.style.strokeDashoffset = total - tip;
-    const p = path.getPointAtLength(tip);
-    SWING.tip = { x: p.x, y: p.y }; // doc coords; the canvas rider hangs here
-    nodes.forEach((n, i) => {
-      const on = tip >= nodeLens[i];
-      // a node igniting fires a web burst into the scene canvas
-      if (on && !lit[i] && primed && EFFECTS.splat) {
-        EFFECTS.splat(nodePts[i].x, nodePts[i].y - scrollY, 0.55);
-      }
-      lit[i] = on;
-      n.classList.toggle("lit", on);
-    });
-    primed = true;
-  }
-
-  let ticking = false;
-  addEventListener("scroll", () => {
-    if (!ticking) { ticking = true; requestAnimationFrame(() => { update(); ticking = false; }); }
-  }, { passive: true });
-
-  // rebuild when layout truly changes (fonts, resize, content)
-  let t;
-  const rebuild = () => { clearTimeout(t); t = setTimeout(build, 220); };
-  addEventListener("resize", rebuild);
-  addEventListener("load", rebuild);
-  build();
 }
 
 /* ============================================================
@@ -817,7 +694,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initReveal();
   initNav();
   initScene();
-  initSwingPath();
   initScrollSkew();
   document.getElementById("year").textContent = new Date().getFullYear();
 });

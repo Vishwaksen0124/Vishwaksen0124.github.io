@@ -1075,39 +1075,6 @@ main {
   color: var(--muted);
 }
 
-/* ---------- the swing line: silk drawn by your scroll ---------- */
-.swing-path {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  pointer-events: none;
-  overflow: visible;
-}
-.swing-path__line {
-  fill: none;
-  stroke: rgba(var(--silk-rgb), 0.34);
-  stroke-width: 1.5;
-}
-.swing-node__ring {
-  fill: none;
-  stroke: rgba(var(--silk-rgb), 0.25);
-  stroke-width: 1;
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: scale(0.4);
-  transition: transform 0.5s cubic-bezier(0.2, 1.4, 0.4, 1), stroke 0.5s ease;
-}
-.swing-node__dot {
-  fill: rgba(var(--silk-rgb), 0.35);
-  transition: fill 0.4s ease;
-}
-.swing-node.lit .swing-node__ring {
-  transform: scale(1);
-  stroke: rgba(var(--red-rgb), 0.75);
-}
-.swing-node.lit .swing-node__dot { fill: var(--red-bright); }
-
 /* main carries the velocity skew */
 main { will-change: transform; }
 
