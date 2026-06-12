@@ -7,6 +7,7 @@
    ============================================================ */
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const canvas = document.getElementById("city3d");
@@ -57,18 +58,30 @@ function webStrand(a, b, silk) {
 function build() {
   const c = colors();
   scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(c.bg, 0.0026);
+  scene.fog = new THREE.FogExp2(c.bg, 0.0023);
   camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 1500);
 
-  // moonlight + a theme-accent rim so the city AND model read in-theme
-  moonLight = new THREE.DirectionalLight(c.silk.clone(), 2.6);
+  // image-based environment so the model's PBR materials read rich,
+  // not flat/dark — the single biggest quality win for a 3D character
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
+
+  // moonlight + theme-accent rim + sky fill so the night stays lit
+  moonLight = new THREE.DirectionalLight(c.silk.clone(), 3.0);
   moonLight.position.set(0.5, 1, 0.4);
   scene.add(moonLight);
-  rimLight = new THREE.DirectionalLight(c.accent.clone(), 1.1);
+  rimLight = new THREE.DirectionalLight(c.accent.clone(), 1.3);
   rimLight.position.set(-0.7, 0.3, -0.5);
   scene.add(rimLight);
-  ambient = new THREE.AmbientLight(c.bg.clone().lerp(c.silk, 0.6), 1.7);
+  ambient = new THREE.AmbientLight(c.bg.clone().lerp(c.silk, 0.6), 2.1);
   scene.add(ambient);
+  scene.add(new THREE.HemisphereLight(c.silk.clone(), c.bg.clone(), 0.7));
+
+  // a key light that travels with the camera to spotlight the model
+  const key = new THREE.DirectionalLight(0xffffff, 1.4);
+  key.position.set(5, 4, 6);
+  camera.add(key);
+  scene.add(camera);
 
   // instanced canyon lining the avenue, receding into -z
   const COUNT = innerWidth < 760 ? 130 : 220;
@@ -269,6 +282,8 @@ function resize() {
 try {
   renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "low-power" });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.35;
   build();
   resize();
   addEventListener("resize", () => { sections = []; resize(); });
