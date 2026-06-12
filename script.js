@@ -60,6 +60,44 @@ const REDUCED_MOTION = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const rnd = (a, b) => a + Math.random() * (b - a);
 
 /* ============================================================
+   Themes — canvas + skyline colors come from the active theme's
+   CSS variables so every effect re-skins instantly.
+   ============================================================ */
+const THEME = {};
+
+function refreshTheme() {
+  const cs = getComputedStyle(document.documentElement);
+  const v = (n, d) => (cs.getPropertyValue(n) || d).trim();
+  THEME.silk = v("--silk-rgb", "214, 222, 244");
+  THEME.acc = v("--red-bright-rgb", "255, 59, 65");
+  THEME.spideyBody = v("--spidey-body", "#e62429");
+  THEME.spideyLimb = v("--spidey-limb", "#c41e23");
+  THEME.spideyGlint = v("--spidey-glint", "#f3f5ff");
+  THEME.cityFar = v("--city-far", "#101831");
+  THEME.cityNear = v("--city-near", "#04060c");
+  THEME.cityWindow = v("--city-window", "#ffd66b");
+}
+
+function initThemes() {
+  const root = document.documentElement;
+  const dots = document.querySelectorAll("[data-set-theme]");
+  const current = () => root.getAttribute("data-theme") || "classic";
+  const mark = () => dots.forEach((d) =>
+    d.classList.toggle("active", d.dataset.setTheme === current()));
+  dots.forEach((d) => d.addEventListener("click", () => {
+    const t = d.dataset.setTheme;
+    if (t === "classic") root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", t);
+    try { localStorage.setItem("vp-theme", t); } catch (e) {}
+    refreshTheme();
+    buildSkyline();
+    mark();
+  }));
+  refreshTheme();
+  mark();
+}
+
+/* ============================================================
    Procedural NYC skyline — two parallax silhouette layers with
    lit, flickering windows. Tower tops are collected so Spidey
    can anchor his webs to real buildings.
@@ -99,13 +137,13 @@ function buildSkyline() {
     }
     return `<svg class="${cls}" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">
       <g fill="${fill}">${rects}</g>
-      <g fill="#ffd66b" opacity="0.55">${windows}</g>
+      <g fill="${THEME.cityWindow}" opacity="0.55">${windows}</g>
     </svg>`;
   }
 
   holder.innerHTML =
-    layer("city__far", H * 0.16, "#101831", false, 0) +
-    layer("city__near", H * 0.13, "#04060c", true, 4);
+    layer("city__far", H * 0.16, THEME.cityFar, false, 0) +
+    layer("city__near", H * 0.13, THEME.cityNear, true, 4);
 
   CITY.far = holder.querySelector(".city__far");
   CITY.near = holder.querySelector(".city__near");
@@ -206,13 +244,13 @@ function initScene() {
     ctx.save();
     // web line while swinging
     if (s.mode === "swing") {
-      ctx.strokeStyle = "rgba(226, 232, 250, 0.75)";
+      ctx.strokeStyle = `rgba(${THEME.silk}, 0.75)`;
       ctx.lineWidth = 1.1;
       ctx.beginPath();
       ctx.moveTo(s.ax, s.ay);
       ctx.lineTo(s.x, s.y);
       ctx.stroke();
-      ctx.fillStyle = "rgba(226, 232, 250, 0.8)";
+      ctx.fillStyle = `rgba(${THEME.silk}, 0.8)`;
       ctx.beginPath();
       ctx.arc(s.ax, s.ay, 2, 0, Math.PI * 2);
       ctx.fill();
@@ -224,7 +262,7 @@ function initScene() {
     ctx.rotate(ang);
     const swingPose = s.mode === "swing";
     // limbs
-    ctx.strokeStyle = "#c41e23";
+    ctx.strokeStyle = THEME.spideyLimb;
     ctx.lineWidth = 2.6;
     ctx.lineCap = "round";
     ctx.beginPath();
@@ -241,7 +279,7 @@ function initScene() {
     }
     ctx.stroke();
     // torso + head
-    ctx.fillStyle = "#e62429";
+    ctx.fillStyle = THEME.spideyBody;
     ctx.beginPath();
     ctx.ellipse(0, 0, 4.6, 8.6, swingPose ? 0.18 : 0.5, 0, Math.PI * 2);
     ctx.fill();
@@ -249,7 +287,7 @@ function initScene() {
     ctx.arc(swingPose ? 1.5 : 5, -11.5, 4, 0, Math.PI * 2);
     ctx.fill();
     // eye glint
-    ctx.fillStyle = "#f3f5ff";
+    ctx.fillStyle = THEME.spideyGlint;
     ctx.beginPath();
     ctx.ellipse(swingPose ? 3 : 6.6, -12.2, 1.5, 1, -0.3, 0, Math.PI * 2);
     ctx.fill();
@@ -278,8 +316,8 @@ function initScene() {
     const near = Math.max(0, 1 - dm / MOUSE_DIST);
     const sag = (1 - near) * 9;
     ctx.strokeStyle = near > 0.05
-      ? `rgba(255, 76, 82, ${alpha * (0.35 + near * 0.6)})`
-      : `rgba(190, 200, 235, ${alpha * 0.22})`;
+      ? `rgba(${THEME.acc}, ${alpha * (0.35 + near * 0.6)})`
+      : `rgba(${THEME.silk}, ${alpha * 0.22})`;
     ctx.lineWidth = 0.7 + near * 0.5;
     ctx.beginPath();
     ctx.moveTo(a.x, a.y);
@@ -292,7 +330,7 @@ function initScene() {
     if (t >= 1) return false;
     const ease = 1 - Math.pow(1 - Math.min(t * 1.6, 1), 3);
     const fade = 1 - t;
-    ctx.strokeStyle = `rgba(232, 236, 250, ${0.65 * fade})`;
+    ctx.strokeStyle = `rgba(${THEME.silk}, ${0.65 * fade})`;
     ctx.lineWidth = 1;
     for (const sp of s.spokes) {
       ctx.beginPath();
@@ -339,7 +377,7 @@ function initScene() {
       return now - s.t0 < 420; // linger briefly, fading
     }
     const fade = t < 1 ? 0.85 : 0;
-    ctx.strokeStyle = `rgba(240, 244, 255, ${fade})`;
+    ctx.strokeStyle = `rgba(${THEME.silk}, ${fade})`;
     ctx.lineWidth = 1.4;
     ctx.beginPath();
     ctx.moveTo(s.x0, s.y0);
@@ -353,7 +391,7 @@ function initScene() {
     for (let i = 1; i < trail.length; i++) {
       const age = (now - trail[i].t) / 450;
       if (age >= 1) continue;
-      ctx.strokeStyle = `rgba(255, 90, 95, ${0.28 * (1 - age)})`;
+      ctx.strokeStyle = `rgba(${THEME.acc}, ${0.28 * (1 - age)})`;
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(trail[i - 1].x, trail[i - 1].y);
@@ -386,7 +424,7 @@ function initScene() {
         if (d < LINK_DIST) drawStrand(a, b, 1 - d / LINK_DIST);
       }
     }
-    ctx.fillStyle = "rgba(214, 222, 244, 0.5)";
+    ctx.fillStyle = `rgba(${THEME.silk}, 0.5)`;
     for (const n of nodes) {
       ctx.beginPath();
       ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
@@ -699,6 +737,7 @@ function initNav() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  initThemes();
   buildSkyline();
   initCityParallax();
   initSectionWebs();
