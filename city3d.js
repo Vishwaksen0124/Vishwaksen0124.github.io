@@ -14,6 +14,7 @@ const canvas = document.getElementById("city3d");
 
 let renderer, scene, camera, buildMesh, windowPts, neonPts, fieldPts, strands;
 let model, mixer, rimLight, moonLight, ambient;
+let sigils = [], embers, sigilMat, emberMat;
 let W = innerWidth, H = innerHeight;
 const tall = [];
 const mouse = { x: 0, y: 0 };
@@ -53,6 +54,47 @@ function webStrand(a, b, silk) {
   return new THREE.Line(g, new THREE.LineBasicMaterial({
     color: silk, transparent: true, opacity: 0.16
   }));
+}
+
+/* Doctor Strange's Eldritch spell circle — concentric runic rings
+   that counter-rotate. Built from line geometry; glows additively. */
+function ringPts(r, segs) {
+  const p = [];
+  for (let i = 0; i <= segs; i++) {
+    const a = (i / segs) * Math.PI * 2;
+    p.push(new THREE.Vector3(Math.cos(a) * r, Math.sin(a) * r, 0));
+  }
+  return p;
+}
+function spokes(r1, r2, n) {
+  const p = [];
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2, c = Math.cos(a), s = Math.sin(a);
+    p.push(new THREE.Vector3(c * r1, s * r1, 0), new THREE.Vector3(c * r2, s * r2, 0));
+  }
+  return p;
+}
+function makeSigil(R) {
+  const g = new THREE.Group();
+  const line = (pts, loop) => new (loop ? THREE.LineLoop : THREE.LineSegments)(
+    new THREE.BufferGeometry().setFromPoints(pts), sigilMat);
+  const outer = new THREE.Group();
+  outer.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts(R, 128)), sigilMat));
+  outer.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts(R * 0.94, 128)), sigilMat));
+  outer.add(line(spokes(R * 0.94, R, 48)));         // outer ticks
+  const inner = new THREE.Group();
+  inner.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts(R * 0.74, 128)), sigilMat));
+  inner.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts(R * 0.68, 128)), sigilMat));
+  inner.add(line(spokes(R * 0.68, R * 0.74, 72)));  // rune ticks
+  const core = new THREE.Group();                    // interlocked triangles (mandala star)
+  const t1 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts(R * 0.42, 3)), sigilMat);
+  const t2 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts(R * 0.42, 3)), sigilMat);
+  t2.rotation.z = Math.PI;
+  core.add(t1, t2);
+  core.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts(R * 0.5, 6)), sigilMat));
+  g.add(outer, inner, core);
+  g.userData = { outer, inner, core };
+  return g;
 }
 
 function build() {
@@ -152,6 +194,43 @@ function build() {
   }
   scene.add(strands);
 
+  // ---- Doctor Strange magic: golden spell circles + embers ----
+  const gold = new THREE.Color(cssVar("--blue-soft", "#e9c469"));
+  sigilMat = new THREE.LineBasicMaterial({ color: gold, transparent: true, opacity: 0.5,
+    blending: THREE.AdditiveBlending, depthWrite: false });
+  sigils = [];
+  // a halo behind the model (travels with the camera)
+  const halo = makeSigil(16);
+  halo.position.set(5, 1, -38);
+  camera.add(halo);
+  sigils.push(halo);
+  // spell circles floating down the avenue, passed as you scroll
+  [[-30, 30, -150, 26], [40, 45, -360, 34], [-20, 60, -560, 30]].forEach(([x, y, z, r]) => {
+    const s = makeSigil(r);
+    s.position.set(x, y, z);
+    scene.add(s);
+    sigils.push(s);
+  });
+
+  // golden magic embers drifting upward
+  const ep = [], ev = [];
+  for (let i = 0; i < 180; i++) {
+    ep.push((Math.random() - 0.5) * 420, Math.random() * 200, 60 - Math.random() * 760);
+    ev.push(4 + Math.random() * 10);
+  }
+  const eg = new THREE.BufferGeometry();
+  eg.setAttribute("position", new THREE.Float32BufferAttribute(ep, 3));
+  eg.userData.vel = ev;
+  emberMat = new THREE.PointsMaterial({ color: gold, size: 1.7, sizeAttenuation: true,
+    transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending, depthWrite: false });
+  embers = new THREE.Points(eg, emberMat);
+  scene.add(embers);
+
+  // a warm magic glow that travels with the camera
+  const glow = new THREE.PointLight(gold, 0.8, 120);
+  glow.position.set(5, 2, -30);
+  camera.add(glow);
+
   // lazy-load the model after first paint so it never blocks the city
   const start = () => tryLoadModel();
   if ("requestIdleCallback" in window) requestIdleCallback(start, { timeout: 2500 });
@@ -170,6 +249,9 @@ function retheme() {
   rimLight.color.copy(c.accent);
   moonLight.color.copy(c.silk);
   ambient.color.copy(c.bg.clone().lerp(c.silk, 0.6));
+  const gold = new THREE.Color(cssVar("--blue-soft", "#e9c469"));
+  sigilMat.color.copy(gold);
+  emberMat.color.copy(gold);
 }
 
 /* real Spider-Man model, lazy-loaded from a CDN after first paint so
@@ -257,6 +339,24 @@ function frame(t) {
   camera.lookAt(camera.position.x * 0.3 + bank, 28, cz - 200);
 
   fieldPts.rotation.y = t / 90000;
+
+  // spin the spell circles (counter-rotating rings) + pulse
+  for (const s of sigils) {
+    s.userData.outer.rotation.z += dt * 0.12;
+    s.userData.inner.rotation.z -= dt * 0.18;
+    s.userData.core.rotation.z += dt * 0.07;
+  }
+  sigilMat.opacity = 0.42 + Math.sin(t / 900) * 0.12;
+
+  // drift the embers upward, wrapping back to street level
+  const ea = embers.geometry.attributes.position, ev = embers.geometry.userData.vel;
+  for (let i = 0; i < ev.length; i++) {
+    let y = ea.getY(i) + ev[i] * dt;
+    if (y > 210) y = 0;
+    ea.setY(i, y);
+  }
+  ea.needsUpdate = true;
+
   if (model) {
     // grow in on load, then move in step with the page: turns to face
     // you as you scroll, drifts across, leans with the section bank
