@@ -17,13 +17,40 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%230a0b0a'/><text x='50' y='70' font-size='58' font-family='monospace' font-weight='700' fill='%23c6f135' text-anchor='middle'>V</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2307090f'/><g stroke='%23e62429' stroke-width='5' stroke-linecap='round' fill='none'><path d='M42 48 L20 34 M42 54 L16 52 M42 60 L20 72 M58 48 L80 34 M58 54 L84 52 M58 60 L80 72'/></g><ellipse cx='50' cy='56' rx='11' ry='15' fill='%23e62429'/><circle cx='50' cy='38' r='7' fill='%23e62429'/><line x1='50' y1='0' x2='50' y2='31' stroke='%23e62429' stroke-width='3'/></svg>" />
 </head>
 <body>
+  <!-- live silk-strand field + click web-splats -->
+  <canvas id="web-canvas" aria-hidden="true"></canvas>
+
+  <!-- scroll progress: a spider rappelling down its thread -->
+  <div class="strand" id="strand" aria-hidden="true">
+    <div class="strand__track"></div>
+    <div class="strand__line" id="strand-line"></div>
+    <div class="strand__spider" id="strand-spider">
+      <svg viewBox="0 0 40 34" width="22" height="19">
+        <g stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none">
+          <path d="M15 14 L4 8 M14 18 L2 17 M15 22 L5 28 M25 14 L36 8 M26 18 L38 17 M25 22 L35 28"/>
+        </g>
+        <ellipse cx="20" cy="20" rx="5.5" ry="8" fill="currentColor"/>
+        <circle cx="20" cy="9" r="4" fill="currentColor"/>
+      </svg>
+    </div>
+  </div>
+
   <header class="nav" id="nav">
-    <a href="#top" class="nav__brand">VP<span class="accent">.</span></a>
+    <a href="#top" class="nav__brand">
+      <svg class="nav__glyph" viewBox="0 0 40 34" aria-hidden="true">
+        <g stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none">
+          <path d="M15 14 L4 8 M14 18 L2 17 M15 22 L5 28 M25 14 L36 8 M26 18 L38 17 M25 22 L35 28"/>
+        </g>
+        <ellipse cx="20" cy="20" rx="5.5" ry="8" fill="currentColor"/>
+        <circle cx="20" cy="9" r="4" fill="currentColor"/>
+      </svg>
+      VP<span class="accent">.</span>
+    </a>
     <nav class="nav__links">
       <a href="#about">About</a>
       <a href="#roles">What I do</a>
@@ -34,19 +61,29 @@
     </nav>
     <div class="nav__right">
       <a href="resume.pdf" target="_blank" rel="noopener" class="nav__resume">Résumé&nbsp;↗</a>
-      <button id="theme-toggle" class="nav__toggle" aria-label="Toggle theme">☼</button>
     </div>
   </header>
 
   <main id="top">
     <!-- ============ HERO ============ -->
-    <section class="hero">
-      <p class="hero__eyebrow">Software Engineer · Gurgaon, India</p>
-      <h1 class="hero__name">Vishwaksen Pujala</h1>
+    <section class="hero" id="hero">
+      <div class="hero__dangler" aria-hidden="true">
+        <span class="hero__thread"></span>
+        <svg class="hero__spider" viewBox="0 0 40 34" width="34" height="29">
+          <g stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none">
+            <path d="M15 14 L4 8 M14 18 L2 17 M15 22 L5 28 M25 14 L36 8 M26 18 L38 17 M25 22 L35 28"/>
+          </g>
+          <ellipse cx="20" cy="20" rx="5.5" ry="8" fill="currentColor"/>
+          <circle cx="20" cy="9" r="4" fill="currentColor"/>
+        </svg>
+      </div>
+
+      <p class="hero__eyebrow"><span class="hero__eyebrow-tag">thwip!</span> Your friendly neighborhood Software Engineer · Gurgaon, India</p>
+      <h1 class="hero__name" data-text="Vishwaksen Pujala">Vishwaksen Pujala</h1>
       <div class="hero__lower">
         <div class="hero__lower-text">
           <p class="hero__tagline">I build the systems that keep a startup running: <span class="accent">backend, data, infrastructure, full-stack and AI.</span></p>
-          <p class="hero__intro">Computer Science graduate from IIIT Sri City, currently shipping production software at an early-stage AI company. I take whatever part of the stack the problem needs.</p>
+          <p class="hero__intro">Computer Science graduate from IIIT Sri City, currently shipping production software at an early-stage AI company. I take whatever part of the stack the problem needs — with great power comes great responsibility.</p>
           <div class="hero__cta">
             <a href="#work" class="btn btn--primary">View my work</a>
             <a href="resume.pdf" target="_blank" rel="noopener" class="btn btn--ghost">Download résumé</a>
@@ -58,6 +95,12 @@
           </div>
         </div>
         <div class="hero__photo-wrap">
+          <svg class="hero__photo-web" viewBox="0 0 120 120" aria-hidden="true">
+            <g fill="none" stroke="currentColor" stroke-width="1.2">
+              <path pathLength="1" d="M0 0 L120 120 M40 0 L120 80 M80 0 L120 40 M0 40 L80 120 M0 80 L40 120"/>
+              <path pathLength="1" d="M30 0 Q28 28 0 30 M60 0 Q56 56 0 60 M90 0 Q84 84 0 90 M120 10 Q110 110 10 120"/>
+            </g>
+          </svg>
           <img class="hero__photo" src="assets/vishwak.jpg" width="720" height="720" alt="Vishwaksen Pujala" />
         </div>
       </div>
@@ -66,8 +109,8 @@
     <!-- ============ ABOUT ============ -->
     <section class="section" id="about">
       <div class="sec-head">
-        <span class="sec-num">01</span>
-        <h2 class="sec-title">About</h2>
+        <span class="sec-num">Issue #01</span>
+        <h2 class="sec-title" data-text="About">About</h2>
         <span class="sec-rule"></span>
       </div>
       <div class="about">
@@ -94,8 +137,8 @@
     <!-- ============ WHAT I DO ============ -->
     <section class="section" id="roles">
       <div class="sec-head">
-        <span class="sec-num">02</span>
-        <h2 class="sec-title">What I do</h2>
+        <span class="sec-num">Issue #02</span>
+        <h2 class="sec-title" data-text="What I do">What I do</h2>
         <span class="sec-rule"></span>
       </div>
       <div class="roles" id="roles-list"></div>
@@ -104,8 +147,8 @@
     <!-- ============ SKILLS ============ -->
     <section class="section" id="skills">
       <div class="sec-head">
-        <span class="sec-num">03</span>
-        <h2 class="sec-title">Toolbox</h2>
+        <span class="sec-num">Issue #03</span>
+        <h2 class="sec-title" data-text="Toolbox">Toolbox</h2>
         <span class="sec-rule"></span>
       </div>
       <div class="skills" id="skills-list"></div>
@@ -114,8 +157,8 @@
     <!-- ============ WORK ============ -->
     <section class="section" id="work">
       <div class="sec-head">
-        <span class="sec-num">04</span>
-        <h2 class="sec-title">Selected work</h2>
+        <span class="sec-num">Issue #04</span>
+        <h2 class="sec-title" data-text="Selected work">Selected work</h2>
         <span class="sec-rule"></span>
         <a class="sec-link" href="https://github.com/Vishwaksen0124?tab=repositories" target="_blank" rel="noopener">All repos ↗</a>
       </div>
@@ -125,8 +168,8 @@
     <!-- ============ EXPERIENCE ============ -->
     <section class="section" id="experience">
       <div class="sec-head">
-        <span class="sec-num">05</span>
-        <h2 class="sec-title">Experience</h2>
+        <span class="sec-num">Issue #05</span>
+        <h2 class="sec-title" data-text="Experience">Experience</h2>
         <span class="sec-rule"></span>
       </div>
       <article class="exp">
@@ -150,8 +193,8 @@
     <!-- ============ EDUCATION ============ -->
     <section class="section" id="education">
       <div class="sec-head">
-        <span class="sec-num">06</span>
-        <h2 class="sec-title">Education</h2>
+        <span class="sec-num">Issue #06</span>
+        <h2 class="sec-title" data-text="Education">Education</h2>
         <span class="sec-rule"></span>
       </div>
       <article class="exp">
@@ -172,11 +215,11 @@
     <!-- ============ CONTACT ============ -->
     <section class="section section--contact" id="contact">
       <div class="sec-head">
-        <span class="sec-num">07</span>
-        <h2 class="sec-title">Contact</h2>
+        <span class="sec-num">Issue #07</span>
+        <h2 class="sec-title" data-text="Contact">Contact</h2>
         <span class="sec-rule"></span>
       </div>
-      <p class="contact__lead">I'm open to full-time Software / Backend / AI Engineer roles and interesting collaborations. The fastest way to reach me is email, and I'll get back to you.</p>
+      <p class="contact__lead">I'm open to full-time Software / Backend / AI Engineer roles and interesting collaborations. The fastest way to reach me is email — no spider-signal required — and I'll get back to you.</p>
       <a class="contact__email" href="mailto:vishwaksenpujala@gmail.com">vishwaksenpujala@gmail.com</a>
       <div class="contact__row">
         <a href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener">GitHub ↗</a>
@@ -188,7 +231,7 @@
 
   <footer class="foot">
     <span>© <span id="year"></span> Vishwaksen Pujala</span>
-    <span>Hand-coded · GitHub Pages</span>
+    <span>With great power comes great responsibility · Hand-coded · GitHub Pages</span>
   </footer>
 
   <script src="script.js"></script>
