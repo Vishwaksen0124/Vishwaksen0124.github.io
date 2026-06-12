@@ -27,7 +27,7 @@ function colors() {
     near: new THREE.Color(cssVar("--surface-2", "#121831")).lerp(new THREE.Color(cssVar("--bg", "#07090f")), -0.6),
     win: new THREE.Color(cssVar("--city-window", "#ffd66b")),
     silk: new THREE.Color(silk[0] / 255, silk[1] / 255, silk[2] / 255),
-    body: new THREE.Color(cssVar("--spidey-body", "#e62429")),
+    body: new THREE.Color(cssVar("--red-bright", "#ff3b41")),
     limb: new THREE.Color(cssVar("--spidey-limb", "#c41e23"))
   };
 }
@@ -97,8 +97,9 @@ function build() {
   scene.add(spideyGroup);
   webLine = new THREE.Line(
     new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(new Float32Array(6), 3)),
-    new THREE.LineBasicMaterial({ color: c.silk, transparent: true, opacity: 0.7 })
+    new THREE.LineBasicMaterial({ color: c.silk, transparent: true, opacity: 0.7, depthTest: false })
   );
+  webLine.renderOrder = 9;
   scene.add(webLine);
   respawnSpidey(80);
 }
@@ -113,8 +114,8 @@ const hv = new THREE.Vector3(), tangent = new THREE.Vector3(), ropeDir = new THR
 
 function makeSpidey(c) {
   const g = new THREE.Group();
-  const red = new THREE.MeshBasicMaterial({ color: c.body });
-  const dark = new THREE.MeshBasicMaterial({ color: c.limb });
+  const red = new THREE.MeshBasicMaterial({ color: c.body, depthTest: false });
+  const dark = new THREE.MeshBasicMaterial({ color: c.limb, depthTest: false });
   const torso = new THREE.Mesh(new THREE.SphereGeometry(1.1, 10, 8), red);
   torso.scale.set(0.75, 1.25, 0.55);
   g.add(torso);
@@ -136,18 +137,21 @@ function makeSpidey(c) {
   limb(-0.5, 0.8, 0, -1.5, 0.2, -0.2); limb(-1.5, 0.2, -0.2, -2.2, -0.7, -0.3); // trailing arm
   limb(0.3, -2, 0, 1.2, -2.9, 0.4); limb(1.2, -2.9, 0.4, 0.9, -4.2, 0.2);    // tucked legs
   limb(-0.3, -2, 0, -1.1, -3, -0.2); limb(-1.1, -3, -0.2, -1.6, -4.3, 0);
-  g.scale.setScalar(1.7);
+  g.scale.setScalar(3.0);
+  g.renderOrder = 10;
+  g.traverse((o) => { o.renderOrder = 10; });
   return { g, red, dark };
 }
 
 function pickAnchor() {
   const z0 = SP.pos.z;
-  const c = tall.filter((t) => t.z < z0 - 30 && t.z > z0 - 240 && t.y > SP.pos.y + 22);
+  const c = tall.filter((t) => t.z < z0 - 25 && t.z > z0 - 160 && t.y > SP.pos.y + 24);
   if (c.length) {
     const t = c[Math.floor(Math.random() * c.length)];
-    return new THREE.Vector3(t.x * 0.9, t.y, t.z);
+    // grab the tower's wall near his height so the swing stays mid-frame
+    return new THREE.Vector3(t.x * 0.5, Math.min(t.y, SP.pos.y + 26 + Math.random() * 16), t.z);
   }
-  return new THREE.Vector3(SP.pos.x * 0.3, SP.pos.y + 65, z0 - 130);
+  return new THREE.Vector3(SP.pos.x * 0.3, SP.pos.y + 34, z0 - 80);
 }
 
 function attachWeb() {
@@ -156,7 +160,7 @@ function attachWeb() {
   if (hv.lengthSq() < 1) hv.set(0, 0, -1);
   SP.f.copy(hv.normalize());
   const r = SP.pos.clone().sub(SP.anchor);
-  SP.L = Math.min(Math.max(r.length(), 28), 95);
+  SP.L = Math.min(Math.max(r.length(), 20), 55);
   hv.copy(r); hv.y = 0;
   SP.th = Math.atan2(hv.dot(SP.f), -r.y);
   tangent.copy(SP.f).multiplyScalar(Math.cos(SP.th)).addScaledVector(up, Math.sin(SP.th));
@@ -165,8 +169,8 @@ function attachWeb() {
 }
 
 function respawnSpidey(camZ) {
-  SP.pos.set((Math.random() - 0.5) * 70, 55 + Math.random() * 35, camZ - 150);
-  SP.v.set(0, 0, -28);
+  SP.pos.set((Math.random() - 0.5) * 48, 28 + Math.random() * 14, camZ - 78);
+  SP.v.set(0, 0, -24);
   attachWeb();
   SP.th = Math.min(SP.th, -0.7);
   SP.om = 1.0;
@@ -190,8 +194,11 @@ function stepSpidey(dt, camZ) {
     SP.pos.addScaledVector(SP.v, dt);
     if (SP.v.y < -12) attachWeb();
   }
-  // keep him in the camera's window of the avenue
-  if (SP.pos.z > camZ - 50 || SP.pos.z < camZ - 430 || SP.pos.y < 8) respawnSpidey(camZ);
+  // keep him in the camera's window of the avenue, at readable height
+  if (SP.pos.z > camZ - 32 || SP.pos.z < camZ - 190 || SP.pos.y < 6 || SP.pos.y > 85 ||
+      Math.abs(SP.pos.x) > 85) {
+    respawnSpidey(camZ);
+  }
 
   spideyGroup.position.copy(SP.pos);
   ropeDir.copy(SP.anchor).sub(SP.pos).normalize();

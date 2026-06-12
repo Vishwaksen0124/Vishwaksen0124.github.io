@@ -1105,11 +1105,77 @@ main { will-change: transform; }
     animation-timeline: view();
     animation-range: entry 5% entry 85%;
   }
-  .work-card:nth-child(even) { animation-name: scrub-rise-tilt; }
+  /* ---- a different signature entrance per section ---- */
+  #about .about__text { animation-name: in-left; }
+  #about .about__side {
+    animation-name: in-flip;
+    transform-origin: 50% 0;
+    perspective: 800px;
+  }
+  #roles .role-row:nth-child(odd) { animation-name: in-left; }
+  #roles .role-row:nth-child(even) { animation-name: in-right; }
+  #skills .skill-group { animation-name: in-pop; }
+  #work .work-card {
+    animation-name: in-dangle;
+    transform-origin: 50% -48px;
+  }
+  #experience .exp { animation-name: in-left; }
+  #education .exp { animation-name: in-right; }
+  #contact .contact__email { animation-name: in-zoom; }
+
+  /* each work card hangs from a silk thread that draws first */
+  .work-card::before {
+    content: "";
+    position: absolute;
+    top: -48px;
+    left: 50%;
+    width: 1.5px;
+    height: 48px;
+    background: linear-gradient(to bottom, transparent, rgba(var(--silk-rgb), 0.55));
+    transform-origin: top;
+    animation: in-thread linear backwards;
+    animation-timeline: view();
+    animation-range: entry 0% entry 60%;
+    pointer-events: none;
+  }
+
   .work-card:nth-child(3n+2) { animation-range: entry 12% entry 92%; }
   .work-card:nth-child(3n) { animation-range: entry 18% entry 98%; }
   .skill-group:nth-child(even), .role-row:nth-child(even) {
     animation-range: entry 12% entry 92%;
+  }
+
+  @keyframes in-left {
+    from { opacity: 0; transform: translateX(-72px); filter: blur(6px); }
+    to { opacity: 1; transform: none; filter: blur(0); }
+  }
+  @keyframes in-right {
+    from { opacity: 0; transform: translateX(72px); filter: blur(6px); }
+    to { opacity: 1; transform: none; filter: blur(0); }
+  }
+  @keyframes in-flip {
+    from { opacity: 0; transform: perspective(800px) rotateX(-56deg) translateY(20px); }
+    60% { opacity: 1; transform: perspective(800px) rotateX(9deg); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes in-pop {
+    from { opacity: 0; transform: translateY(44px) scale(0.88); filter: blur(5px); }
+    70% { opacity: 1; transform: translateY(-4px) scale(1.015); filter: blur(0); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes in-dangle {
+    from { opacity: 0; transform: translateY(-34px) rotate(3.5deg); }
+    45% { opacity: 1; transform: translateY(6px) rotate(-2deg); }
+    75% { transform: translateY(-2px) rotate(1deg); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes in-zoom {
+    from { opacity: 0; transform: scale(0.7); filter: blur(8px); }
+    to { opacity: 1; transform: none; filter: blur(0); }
+  }
+  @keyframes in-thread {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
   }
   .marquee .marquee__inner {
     animation: marquee-roll 32s linear infinite, scrub-fade linear both;
@@ -1174,7 +1240,7 @@ main { will-change: transform; }
   .reveal { opacity: 1; transform: none; }
   /* scroll-timeline animations ignore duration — disable them outright */
   .bg-web svg, .dusk, .section::before, .hero, .hero__name, .hero__photo-wrap,
-  .work-card, .exp, .skill-group, .role-row, .sec-head,
+  .work-card, .work-card::before, .exp, .skill-group, .role-row, .sec-head,
   .about__text, .about__side, .contact__lead, .contact__email, .contact__row,
   .marquee .marquee__inner {
     animation: none !important;
