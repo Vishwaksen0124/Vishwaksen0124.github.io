@@ -463,6 +463,126 @@ function letterize() {
 }
 
 /* ============================================================
+   The swing line — one continuous silk thread weaving down the
+   whole document through every section, drawn by your scroll.
+   A glowing tip rides the curve; a web node ignites at each
+   section as the line reaches it.
+   ============================================================ */
+function initSwingPath() {
+  if (REDUCED_MOTION) return;
+  let svg, path, glint, nodes = [], nodeLens = [], total = 0, docH = 0;
+
+  function build() {
+    if (svg) svg.remove();
+    docH = document.documentElement.scrollHeight;
+    const W = innerWidth;
+    if (W < 760) return;
+    const sections = [...document.querySelectorAll("main .section")];
+    if (!sections.length) return;
+
+    // anchor points weave left-right, one per section
+    const pts = [{ x: W * 0.5, y: 24 }];
+    sections.forEach((sec, i) => {
+      pts.push({ x: W * (i % 2 ? 0.94 : 0.06), y: sec.offsetTop + 110 });
+    });
+    pts.push({ x: W * 0.5, y: docH - 60 });
+
+    let d = `M ${pts[0].x} ${pts[0].y}`;
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1], b = pts[i];
+      const ym = (a.y + b.y) / 2;
+      d += ` C ${a.x} ${ym}, ${b.x} ${ym}, ${b.x} ${b.y}`;
+    }
+
+    svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "swing-path");
+    svg.setAttribute("width", W);
+    svg.setAttribute("height", docH);
+    svg.setAttribute("viewBox", `0 0 ${W} ${docH}`);
+    svg.innerHTML = `
+      <path class="swing-path__line" d="${d}"/>
+      ${pts.slice(1, -1).map((p) => `<g class="swing-node" transform="translate(${p.x} ${p.y})">
+        <circle class="swing-node__ring" r="9"/>
+        <circle class="swing-node__dot" r="3"/>
+      </g>`).join("")}
+      <circle class="swing-glint" r="3.5"/>`;
+    document.body.appendChild(svg);
+
+    path = svg.querySelector(".swing-path__line");
+    glint = svg.querySelector(".swing-glint");
+    nodes = [...svg.querySelectorAll(".swing-node")];
+    total = path.getTotalLength();
+    path.style.strokeDasharray = total;
+
+    // length along the path at which each node sits
+    const nodePts = pts.slice(1, -1);
+    nodeLens = nodePts.map(() => 0);
+    const best = nodePts.map(() => Infinity);
+    for (let l = 0; l <= total; l += 24) {
+      const p = path.getPointAtLength(l);
+      nodePts.forEach((np, i) => {
+        const dd = (p.x - np.x) ** 2 + (p.y - np.y) ** 2;
+        if (dd < best[i]) { best[i] = dd; nodeLens[i] = l; }
+      });
+    }
+    update();
+  }
+
+  function update() {
+    if (!path) return;
+    const tip = Math.min(total, Math.max(0, total * ((scrollY + innerHeight * 0.6) / docH)));
+    path.style.strokeDashoffset = total - tip;
+    const p = path.getPointAtLength(tip);
+    glint.setAttribute("cx", p.x);
+    glint.setAttribute("cy", p.y);
+    nodes.forEach((n, i) => n.classList.toggle("lit", tip >= nodeLens[i]));
+  }
+
+  let ticking = false;
+  addEventListener("scroll", () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(() => { update(); ticking = false; }); }
+  }, { passive: true });
+
+  // rebuild when layout truly changes (fonts, resize, content)
+  let t;
+  const rebuild = () => { clearTimeout(t); t = setTimeout(build, 220); };
+  addEventListener("resize", rebuild);
+  addEventListener("load", rebuild);
+  build();
+}
+
+/* ============================================================
+   Velocity skew — the page leans into fast scrolls and eases
+   back upright, like a swing mid-arc.
+   ============================================================ */
+function initScrollSkew() {
+  if (REDUCED_MOTION) return;
+  const main = document.querySelector("main");
+  let target = 0, cur = 0, lastY = scrollY, lastT = performance.now(), raf = null;
+
+  function tick() {
+    target *= 0.86;
+    cur += (target - cur) * 0.12;
+    if (Math.abs(cur) < 0.012 && Math.abs(target) < 0.012) {
+      main.style.transform = "";
+      raf = null;
+      return;
+    }
+    main.style.transform = `skewY(${cur.toFixed(3)}deg)`;
+    raf = requestAnimationFrame(tick);
+  }
+
+  addEventListener("scroll", () => {
+    const now = performance.now();
+    const dt = Math.max(now - lastT, 1);
+    const v = (scrollY - lastY) / dt;
+    lastY = scrollY; lastT = now;
+    target = Math.max(-1.1, Math.min(1.1, v * 0.55));
+    if (!raf) raf = requestAnimationFrame(tick);
+  }, { passive: true });
+}
+
+/* ============================================================
    Scroll strand — the spider rappels down as you read.
    ============================================================ */
 function initStrand() {
@@ -590,5 +710,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initNav();
   initScene();
   initStrand();
+  initSwingPath();
+  initScrollSkew();
   document.getElementById("year").textContent = new Date().getFullYear();
 });
