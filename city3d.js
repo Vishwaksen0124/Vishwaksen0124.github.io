@@ -10,10 +10,12 @@ import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const canvas = document.getElementById("city3d");
 
-let renderer, scene, camera, buildMesh, windowPts, fieldPts, strands;
+let renderer, scene, camera, buildMesh, windowPts, neonPts, fieldPts, strands;
+let model, mixer;
 let W = innerWidth, H = innerHeight;
 const tall = [];
 const mouse = { x: 0, y: 0 };
+const clock = { last: 0 };
 
 function cssVar(n, d) {
   const v = getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -25,10 +27,11 @@ function colors() {
   const silk = cssVar("--silk-rgb", "214,222,244").split(",").map(Number);
   return {
     bg: hexVar("--bg", "#07090f"),
-    near: hexVar("--surface-2", "#121831").lerp(hexVar("--bg", "#07090f"), -0.55),
+    near: hexVar("--surface-2", "#121831").lerp(hexVar("--bg", "#07090f"), -1.1),
     win: hexVar("--city-window", "#ffd66b"),
     silk: new THREE.Color(silk[0] / 255, silk[1] / 255, silk[2] / 255),
-    accent: hexVar("--red-bright", "#ff3b41")
+    accent: hexVar("--red-bright", "#ff3b41"),
+    neon: hexVar("--blue-soft", "#7e93ff")
   };
 }
 
@@ -53,14 +56,17 @@ function webStrand(a, b, silk) {
 function build() {
   const c = colors();
   scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(c.bg, 0.0034);
+  scene.fog = new THREE.FogExp2(c.bg, 0.0026);
   camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 1500);
 
-  // cold moonlight so building faces shade and read as volumes
-  const moon = new THREE.DirectionalLight(c.silk.clone(), 2.0);
+  // moonlight + a warm and a cool rim so faces read as vivid volumes
+  const moon = new THREE.DirectionalLight(c.silk.clone(), 2.6);
   moon.position.set(0.5, 1, 0.4);
   scene.add(moon);
-  scene.add(new THREE.AmbientLight(c.bg.clone().lerp(c.silk, 0.5), 1.25));
+  const rim = new THREE.DirectionalLight(c.accent.clone(), 0.9);
+  rim.position.set(-0.7, 0.3, -0.5);
+  scene.add(rim);
+  scene.add(new THREE.AmbientLight(c.bg.clone().lerp(c.silk, 0.6), 1.7));
 
   // instanced canyon lining the avenue, receding into -z
   const COUNT = innerWidth < 760 ? 170 : 300;
@@ -68,7 +74,7 @@ function build() {
   geo.translate(0, 0.5, 0);
   buildMesh = new THREE.InstancedMesh(geo, new THREE.MeshLambertMaterial({ color: c.near }), COUNT);
   const m = new THREE.Matrix4();
-  const winPos = [];
+  const winPos = [], neonPos = [];
   tall.length = 0;
   for (let i = 0; i < COUNT; i++) {
     const side = i % 2 ? 1 : -1;
@@ -83,19 +89,31 @@ function build() {
     buildMesh.setMatrixAt(i, m);
     if (isTall) tall.push({ x, y: h, z });
     const face = x > 0 ? x - w / 2 - 0.3 : x + w / 2 + 0.3;
-    for (let wy = 4; wy < h - 3; wy += 5.5) {
-      for (let wz = z - d / 2 + 2; wz < z + d / 2 - 1; wz += 4.5) {
-        if (Math.random() < 0.26) winPos.push(face, wy, wz);
+    for (let wy = 4; wy < h - 3; wy += 5) {
+      for (let wz = z - d / 2 + 2; wz < z + d / 2 - 1; wz += 4) {
+        const r = Math.random();
+        if (r < 0.36) winPos.push(face, wy, wz);          // warm windows
+        else if (r < 0.46) neonPos.push(face, wy, wz);    // neon accents
       }
     }
   }
   scene.add(buildMesh);
 
+  // warm windows glow with additive blending
   windowPts = new THREE.Points(
     new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(winPos, 3)),
-    new THREE.PointsMaterial({ color: c.win, size: 1.5, sizeAttenuation: true, transparent: true, opacity: 0.62 })
+    new THREE.PointsMaterial({ color: c.win, size: 2.1, sizeAttenuation: true, transparent: true,
+      opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false })
   );
   scene.add(windowPts);
+
+  // a scatter of neon (Spider-Verse) accent windows
+  neonPts = new THREE.Points(
+    new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(neonPos, 3)),
+    new THREE.PointsMaterial({ color: c.accent, size: 2.4, sizeAttenuation: true, transparent: true,
+      opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false })
+  );
+  scene.add(neonPts);
 
   // silk motes drifting high above the street
   const motes = [];
@@ -118,6 +136,8 @@ function build() {
     }
   }
   scene.add(strands);
+
+  tryLoadModel();
 }
 
 function retheme() {
@@ -125,8 +145,39 @@ function retheme() {
   scene.fog.color.copy(c.bg);
   buildMesh.material.color.copy(c.near);
   windowPts.material.color.copy(c.win);
+  neonPts.material.color.copy(c.accent);
   fieldPts.material.color.copy(c.silk);
   strands.children.forEach((s) => s.material.color.copy(c.silk));
+}
+
+/* optional real model — drop assets/spiderman.glb (or set
+   window.SPIDEY_MODEL_URL) and it loads at runtime, animations too.
+   No copyrighted asset ships in the repo; the city is the fallback. */
+async function tryLoadModel() {
+  const url = window.SPIDEY_MODEL_URL || "assets/spiderman.glb";
+  try {
+    const res = await fetch(url, { method: "HEAD" });
+    if (!res.ok) return;
+    const { GLTFLoader } = await import("https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js");
+    new GLTFLoader().load(url, (gltf) => {
+      model = gltf.scene;
+      const box = new THREE.Box3().setFromObject(model);
+      const size = new THREE.Vector3(); box.getSize(size);
+      const center = new THREE.Vector3(); box.getCenter(center);
+      model.position.sub(center);                 // recenter
+      const wrap = new THREE.Group();
+      wrap.add(model);
+      wrap.scale.setScalar(9 / (size.y || 1));    // fit to a ~9u height
+      wrap.position.set(9, -1, -26);              // hang in front, right of frame
+      camera.add(wrap);
+      scene.add(camera);
+      model = wrap;
+      if (gltf.animations && gltf.animations.length) {
+        mixer = new THREE.AnimationMixer(gltf.scene);
+        mixer.clipAction(gltf.animations[0]).play();
+      }
+    });
+  } catch (e) { /* keep the city */ }
 }
 
 /* gentle per-section camera bank so each section feels staged */
@@ -141,6 +192,8 @@ function sectionBank() {
 
 let raf, lastT = 0;
 function frame(t) {
+  const dt = (clock.last ? t - clock.last : 16) / 1000;
+  clock.last = t;
   lastT = t;
   const max = document.documentElement.scrollHeight - innerHeight;
   const p = max > 0 ? Math.min(1, scrollY / max) : 0;
@@ -154,6 +207,8 @@ function frame(t) {
   camera.lookAt(camera.position.x * 0.3 + bank, 28, cz - 200);
 
   fieldPts.rotation.y = t / 90000;
+  if (model) model.rotation.y = Math.sin(t / 2400) * 0.5;   // gentle turntable
+  if (mixer) mixer.update(dt);
   renderer.render(scene, camera);
   raf = requestAnimationFrame(frame);
 }
