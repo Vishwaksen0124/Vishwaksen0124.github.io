@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="styles.css?v=8" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2307090f'/><g stroke='%23e62429' stroke-width='5' stroke-linecap='round' fill='none'><path d='M42 48 L20 34 M42 54 L16 52 M42 60 L20 72 M58 48 L80 34 M58 54 L84 52 M58 60 L80 72'/></g><ellipse cx='50' cy='56' rx='11' ry='15' fill='%23e62429'/><circle cx='50' cy='38' r='7' fill='%23e62429'/><line x1='50' y1='0' x2='50' y2='31' stroke='%23e62429' stroke-width='3'/></svg>" />
   <script>
     /* apply saved theme before first paint to avoid a flash */
@@ -29,6 +29,25 @@
   </script>
 </head>
 <body>
+  <!-- the spider emblem, defined once and reused everywhere -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="spider-emblem" viewBox="0 0 100 100">
+      <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+        <path d="M46 41 C37 35, 31 26, 28 14"/>
+        <path d="M45 46 C33 43, 24 37, 17 28"/>
+        <path d="M45 52 C33 54, 24 60, 15 70"/>
+        <path d="M46 57 C40 65, 36 75, 35 87"/>
+        <path d="M54 41 C63 35, 69 26, 72 14"/>
+        <path d="M55 46 C67 43, 76 37, 83 28"/>
+        <path d="M55 52 C67 54, 76 60, 85 70"/>
+        <path d="M54 57 C60 65, 64 75, 65 87"/>
+      </g>
+      <circle cx="50" cy="36.5" r="4.2" fill="currentColor"/>
+      <ellipse cx="50" cy="45" rx="3.6" ry="5.2" fill="currentColor"/>
+      <path d="M50 50 C54.5 53, 56 60.5, 50 74 C44 60.5, 45.5 53, 50 50 Z" fill="currentColor"/>
+    </symbol>
+  </svg>
+
   <!-- giant background web, slowly rotating as you scroll -->
   <div class="bg-web" aria-hidden="true">
     <svg viewBox="0 0 800 800">
@@ -52,13 +71,7 @@
 
   <header class="nav" id="nav">
     <a href="#top" class="nav__brand">
-      <svg class="nav__glyph" viewBox="0 0 40 34" aria-hidden="true">
-        <g stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none">
-          <path d="M15 14 L4 8 M14 18 L2 17 M15 22 L5 28 M25 14 L36 8 M26 18 L38 17 M25 22 L35 28"/>
-        </g>
-        <ellipse cx="20" cy="20" rx="5.5" ry="8" fill="currentColor"/>
-        <circle cx="20" cy="9" r="4" fill="currentColor"/>
-      </svg>
+      <svg class="nav__glyph" aria-hidden="true"><use href="#spider-emblem"/></svg>
       VP<span class="accent">.</span>
     </a>
     <nav class="nav__links">
@@ -85,15 +98,10 @@
     <section class="hero" id="hero">
       <div class="hero__dangler" aria-hidden="true">
         <span class="hero__thread"></span>
-        <svg class="hero__spider" viewBox="0 0 40 34" width="34" height="29">
-          <g stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none">
-            <path d="M15 14 L4 8 M14 18 L2 17 M15 22 L5 28 M25 14 L36 8 M26 18 L38 17 M25 22 L35 28"/>
-          </g>
-          <ellipse cx="20" cy="20" rx="5.5" ry="8" fill="currentColor"/>
-          <circle cx="20" cy="9" r="4" fill="currentColor"/>
-        </svg>
+        <svg class="hero__spider" aria-hidden="true"><use href="#spider-emblem"/></svg>
       </div>
 
+      <svg class="hero__emblem" aria-hidden="true"><use href="#spider-emblem"/></svg>
       <p class="hero__eyebrow"><span class="hero__eyebrow-tag">thwip!</span> Your friendly neighborhood Software Engineer · Gurgaon, India</p>
       <h1 class="hero__name" data-text="Vishwaksen Pujala">Vishwaksen Pujala</h1>
       <div class="hero__lower">
@@ -149,7 +157,7 @@
           </ul>
         </div>
         <aside class="about__side">
-          <div class="about__mono">VP</div>
+          <svg class="about__emblem" aria-hidden="true"><use href="#spider-emblem"/></svg>
           <p class="about__name">Vishwaksen Pujala</p>
           <p class="about__role">Software Engineer</p>
           <a class="about__resume" href="resume.pdf" target="_blank" rel="noopener">→ Read my résumé</a>
@@ -261,9 +269,10 @@
 
   <footer class="foot">
     <span>© <span id="year"></span> Vishwaksen Pujala</span>
+    <svg class="foot__emblem" aria-hidden="true"><use href="#spider-emblem"/></svg>
     <span>With great power comes great responsibility · Hand-coded · GitHub Pages</span>
   </footer>
 
-  <script src="script.js?v=7"></script>
+  <script src="script.js?v=8"></script>
 </body>
 </html>
