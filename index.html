@@ -22,7 +22,25 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2307090f'/><g stroke='%23e62429' stroke-width='5' stroke-linecap='round' fill='none'><path d='M42 48 L20 34 M42 54 L16 52 M42 60 L20 72 M58 48 L80 34 M58 54 L84 52 M58 60 L80 72'/></g><ellipse cx='50' cy='56' rx='11' ry='15' fill='%23e62429'/><circle cx='50' cy='38' r='7' fill='%23e62429'/><line x1='50' y1='0' x2='50' y2='31' stroke='%23e62429' stroke-width='3'/></svg>" />
 </head>
 <body>
-  <!-- live silk-strand field + click web-splats -->
+  <!-- giant background web, slowly rotating as you scroll -->
+  <div class="bg-web" aria-hidden="true">
+    <svg viewBox="0 0 800 800">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M400 400 L400 0 M400 400 L683 117 M400 400 L800 400 M400 400 L683 683 M400 400 L400 800 M400 400 L117 683 M400 400 L0 400 M400 400 L117 117"/>
+        <path d="M400 280 Q485 315 520 400 Q485 485 400 520 Q315 485 280 400 Q315 315 400 280Z"/>
+        <path d="M400 160 Q570 230 640 400 Q570 570 400 640 Q230 570 160 400 Q230 230 400 160Z"/>
+        <path d="M400 40 Q655 145 760 400 Q655 655 400 760 Q145 655 40 400 Q145 145 400 40Z"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- night deepens as you scroll -->
+  <div class="dusk" aria-hidden="true"></div>
+
+  <!-- procedural NYC skyline (filled by script.js) -->
+  <div class="city" id="city" aria-hidden="true"></div>
+
+  <!-- live silk-strand field + swinging Spidey + click web-shots -->
   <canvas id="web-canvas" aria-hidden="true"></canvas>
 
   <!-- scroll progress: a spider rappelling down its thread -->
@@ -106,8 +124,15 @@
       </div>
     </section>
 
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__inner">
+        <span>The amazing portfolio — with great code comes great responsibility — backend · data · infra · AI — thwip! —&nbsp;</span>
+        <span>The amazing portfolio — with great code comes great responsibility — backend · data · infra · AI — thwip! —&nbsp;</span>
+      </div>
+    </div>
+
     <!-- ============ ABOUT ============ -->
-    <section class="section" id="about">
+    <section class="section" id="about" data-watermark="Amazing">
       <div class="sec-head">
         <span class="sec-num">Issue #01</span>
         <h2 class="sec-title" data-text="About">About</h2>
@@ -135,7 +160,7 @@
     </section>
 
     <!-- ============ WHAT I DO ============ -->
-    <section class="section" id="roles">
+    <section class="section" id="roles" data-watermark="Spectacular">
       <div class="sec-head">
         <span class="sec-num">Issue #02</span>
         <h2 class="sec-title" data-text="What I do">What I do</h2>
@@ -145,7 +170,7 @@
     </section>
 
     <!-- ============ SKILLS ============ -->
-    <section class="section" id="skills">
+    <section class="section" id="skills" data-watermark="Ultimate">
       <div class="sec-head">
         <span class="sec-num">Issue #03</span>
         <h2 class="sec-title" data-text="Toolbox">Toolbox</h2>
@@ -155,7 +180,7 @@
     </section>
 
     <!-- ============ WORK ============ -->
-    <section class="section" id="work">
+    <section class="section" id="work" data-watermark="Web-slinger">
       <div class="sec-head">
         <span class="sec-num">Issue #04</span>
         <h2 class="sec-title" data-text="Selected work">Selected work</h2>
@@ -166,7 +191,7 @@
     </section>
 
     <!-- ============ EXPERIENCE ============ -->
-    <section class="section" id="experience">
+    <section class="section" id="experience" data-watermark="Friendly">
       <div class="sec-head">
         <span class="sec-num">Issue #05</span>
         <h2 class="sec-title" data-text="Experience">Experience</h2>
@@ -191,7 +216,7 @@
     </section>
 
     <!-- ============ EDUCATION ============ -->
-    <section class="section" id="education">
+    <section class="section" id="education" data-watermark="Neighborhood">
       <div class="sec-head">
         <span class="sec-num">Issue #06</span>
         <h2 class="sec-title" data-text="Education">Education</h2>
@@ -212,8 +237,15 @@
       </article>
     </section>
 
+    <div class="marquee marquee--blue" aria-hidden="true">
+      <div class="marquee__inner">
+        <span>Open to work — software · backend · AI engineer — your friendly neighborhood problem solver — say hello —&nbsp;</span>
+        <span>Open to work — software · backend · AI engineer — your friendly neighborhood problem solver — say hello —&nbsp;</span>
+      </div>
+    </div>
+
     <!-- ============ CONTACT ============ -->
-    <section class="section section--contact" id="contact">
+    <section class="section section--contact" id="contact" data-watermark="Thwip!">
       <div class="sec-head">
         <span class="sec-num">Issue #07</span>
         <h2 class="sec-title" data-text="Contact">Contact</h2>

@@ -54,13 +54,79 @@ body::after {
 a { color: inherit; }
 .accent { color: var(--red-bright); }
 
+/* ---------- custom web-reticle cursor ---------- */
+body {
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26'><g fill='none' stroke='%23e8eaf2' stroke-width='1.4' opacity='.9'><circle cx='13' cy='13' r='6'/><path d='M13 0v5M13 21v5M0 13h5M21 13h5'/></g><circle cx='13' cy='13' r='1.4' fill='%23e8eaf2'/></svg>") 13 13, crosshair;
+}
+a, button, .is-link, .chip {
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26'><g fill='none' stroke='%23ff3b41' stroke-width='1.6'><circle cx='13' cy='13' r='6'/><path d='M13 0v5M13 21v5M0 13h5M21 13h5'/></g><circle cx='13' cy='13' r='1.8' fill='%23ff3b41'/></svg>") 13 13, pointer;
+}
+
+/* ---------- background layers (back to front):
+   bg-web → dusk → city skyline → web canvas → content ---------- */
+
+/* giant web rotating slowly with scroll progress */
+.bg-web {
+  position: fixed;
+  top: -32vmax;
+  right: -28vmax;
+  width: 75vmax;
+  height: 75vmax;
+  color: rgba(190, 200, 235, 0.5);
+  opacity: 0.075;
+  z-index: 0;
+  pointer-events: none;
+}
+.bg-web svg { width: 100%; height: 100%; }
+@supports (animation-timeline: scroll()) {
+  .bg-web svg {
+    animation: bg-web-spin linear both;
+    animation-timeline: scroll(root);
+  }
+  @keyframes bg-web-spin {
+    from { transform: rotate(0deg) scale(1); }
+    to { transform: rotate(50deg) scale(1.18); }
+  }
+}
+
+/* the night deepens as you scroll toward the contact section */
+.dusk {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 500px at 50% 110%, rgba(230, 36, 41, 0.13), transparent 65%),
+    linear-gradient(to bottom, rgba(2, 3, 8, 0) 30%, rgba(2, 3, 8, 0.55));
+  opacity: 0;
+}
+@supports (animation-timeline: scroll()) {
+  .dusk {
+    animation: dusk-fall linear both;
+    animation-timeline: scroll(root);
+  }
+  @keyframes dusk-fall { from { opacity: 0; } to { opacity: 1; } }
+}
+
+/* procedural skyline */
+.city {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.city svg { position: absolute; bottom: 0; left: 0; will-change: transform; }
+.city__far { opacity: 0.8; }
+.win-f { animation: win-flick 3.4s steps(2, jump-none) infinite; }
+@keyframes win-flick { 50% { opacity: 0.1; } }
+
 /* ---------- live web canvas ---------- */
 #web-canvas {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 0;
+  z-index: 1;
 }
 
 main, .nav, .foot { position: relative; z-index: 2; }
@@ -185,6 +251,35 @@ main {
 }
 
 .section { padding: clamp(64px, 10vh, 110px) 0; position: relative; }
+
+/* huge outlined comic watermark gliding across each section on scroll */
+.section::before {
+  content: attr(data-watermark);
+  position: absolute;
+  top: 4px;
+  left: -2vw;
+  font-family: var(--display);
+  font-size: clamp(4.5rem, 13vw, 11rem);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(214, 222, 244, 0.07);
+  pointer-events: none;
+  user-select: none;
+  z-index: -1;
+}
+@supports (animation-timeline: view()) {
+  .section::before {
+    animation: watermark-glide linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+  @keyframes watermark-glide {
+    from { transform: translateX(6vw); }
+    to { transform: translateX(-10vw); }
+  }
+}
 
 /* corner web injected by JS into each section */
 .web-corner {
@@ -433,6 +528,67 @@ main {
   from { opacity: 0; transform: translateY(26px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* letterized hero name: each letter swings down on its own thread,
+   carrying its own red/blue misprint shadow */
+.hero__name.letterized::before,
+.hero__name.letterized::after { content: none; }
+.hero__name .ltr {
+  display: inline-block;
+  transform-origin: 50% 0;
+  animation: ltr-swing 0.75s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  text-shadow: -5px 4px 0 var(--red), 5px -3px 0 var(--blue);
+}
+@keyframes ltr-swing {
+  0% { opacity: 0; transform: translateY(-1.1em) rotate(-22deg); }
+  60% { opacity: 1; transform: translateY(0.05em) rotate(4deg); }
+  100% { opacity: 1; transform: translateY(0) rotate(0); }
+}
+
+/* hero glides up and fades as you scroll past it */
+@supports (animation-timeline: scroll()) {
+  .hero {
+    animation: hero-exit linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 100vh;
+  }
+  @keyframes hero-exit {
+    to { transform: translateY(-9vh); opacity: 0.05; }
+  }
+}
+
+/* ---------- comic marquee strips ---------- */
+.marquee {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  background: var(--red);
+  transform: rotate(-1.3deg) scale(1.03);
+  padding: 11px 0;
+  overflow: hidden;
+  box-shadow: 0 6px 0 rgba(61, 90, 254, 0.55);
+  position: relative;
+  z-index: 2;
+}
+.marquee--blue {
+  background: var(--blue);
+  transform: rotate(1.3deg) scale(1.03);
+  box-shadow: 0 6px 0 rgba(230, 36, 41, 0.55);
+}
+.marquee__inner {
+  display: flex;
+  width: max-content;
+  white-space: nowrap;
+  animation: marquee-roll 26s linear infinite;
+}
+.marquee--blue .marquee__inner { animation-direction: reverse; }
+.marquee span {
+  font-family: var(--display);
+  font-size: 1.05rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+}
+@keyframes marquee-roll { to { transform: translateX(-50%); } }
 
 @media (max-width: 820px) {
   .hero__lower { grid-template-columns: 1fr; }
