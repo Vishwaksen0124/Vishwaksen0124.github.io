@@ -17,73 +17,13 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preconnect" href="https://unpkg.com" crossorigin />
-  <link rel="modulepreload" href="https://unpkg.com/three@0.160.0/build/three.module.js" />
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-    }
-  }
-  </script>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=22" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2307090f'/><g stroke='%23e62429' stroke-width='5' stroke-linecap='round' fill='none'><path d='M42 48 L20 34 M42 54 L16 52 M42 60 L20 72 M58 48 L80 34 M58 54 L84 52 M58 60 L80 72'/></g><ellipse cx='50' cy='56' rx='11' ry='15' fill='%23e62429'/><circle cx='50' cy='38' r='7' fill='%23e62429'/><line x1='50' y1='0' x2='50' y2='31' stroke='%23e62429' stroke-width='3'/></svg>" />
-  <script>
-    /* apply saved theme before first paint to avoid a flash */
-    try {
-      var t = localStorage.getItem("vp-theme");
-      if (t && t !== "classic") document.documentElement.setAttribute("data-theme", t);
-    } catch (e) {}
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%230a0b0a'/><text x='50' y='70' font-size='58' font-family='monospace' font-weight='700' fill='%23c6f135' text-anchor='middle'>V</text></svg>" />
 </head>
 <body>
-  <!-- the spider emblem, defined once and reused everywhere -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <symbol id="spider-emblem" viewBox="0 0 100 100">
-      <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
-        <path d="M46 41 C37 35, 31 26, 28 14"/>
-        <path d="M45 46 C33 43, 24 37, 17 28"/>
-        <path d="M45 52 C33 54, 24 60, 15 70"/>
-        <path d="M46 57 C40 65, 36 75, 35 87"/>
-        <path d="M54 41 C63 35, 69 26, 72 14"/>
-        <path d="M55 46 C67 43, 76 37, 83 28"/>
-        <path d="M55 52 C67 54, 76 60, 85 70"/>
-        <path d="M54 57 C60 65, 64 75, 65 87"/>
-      </g>
-      <circle cx="50" cy="36.5" r="4.2" fill="currentColor"/>
-      <ellipse cx="50" cy="45" rx="3.6" ry="5.2" fill="currentColor"/>
-      <path d="M50 50 C54.5 53, 56 60.5, 50 74 C44 60.5, 45.5 53, 50 50 Z" fill="currentColor"/>
-    </symbol>
-  </svg>
-
-  <!-- giant background web, slowly rotating as you scroll -->
-  <div class="bg-web" aria-hidden="true">
-    <svg viewBox="0 0 800 800">
-      <g fill="none" stroke="currentColor" stroke-width="1">
-        <path d="M400 400 L400 0 M400 400 L683 117 M400 400 L800 400 M400 400 L683 683 M400 400 L400 800 M400 400 L117 683 M400 400 L0 400 M400 400 L117 117"/>
-        <path d="M400 280 Q485 315 520 400 Q485 485 400 520 Q315 485 280 400 Q315 315 400 280Z"/>
-        <path d="M400 160 Q570 230 640 400 Q570 570 400 640 Q230 570 160 400 Q230 230 400 160Z"/>
-        <path d="M400 40 Q655 145 760 400 Q655 655 400 760 Q145 655 40 400 Q145 145 400 40Z"/>
-      </g>
-    </svg>
-  </div>
-
-  <!-- night deepens as you scroll -->
-  <div class="dusk" aria-hidden="true"></div>
-
-  <!-- 3D night city (Three.js fly-through, driven by scroll) -->
-  <canvas id="city3d" class="city" aria-hidden="true"></canvas>
-
-  <!-- live silk-strand field + swinging Spidey + click web-shots -->
-  <canvas id="web-canvas" aria-hidden="true"></canvas>
-
   <header class="nav" id="nav">
-    <a href="#top" class="nav__brand">
-      <svg class="nav__glyph" aria-hidden="true"><use href="#spider-emblem"/></svg>
-      VP<span class="accent">.</span>
-    </a>
+    <a href="#top" class="nav__brand">VP<span class="accent">.</span></a>
     <nav class="nav__links">
       <a href="#about">About</a>
       <a href="#roles">What I do</a>
@@ -93,31 +33,20 @@
       <a href="#contact">Contact</a>
     </nav>
     <div class="nav__right">
-      <div class="themes" role="group" aria-label="Color theme">
-        <button class="theme-dot" data-set-theme="classic" aria-label="No Way Home theme" title="No Way Home"></button>
-        <button class="theme-dot" data-set-theme="miles" aria-label="Miles Morales theme" title="Miles Morales"></button>
-        <button class="theme-dot" data-set-theme="symbiote" aria-label="Symbiote theme" title="Symbiote"></button>
-        <button class="theme-dot" data-set-theme="bugle" aria-label="Daily Bugle light theme" title="Daily Bugle"></button>
-      </div>
       <a href="resume.pdf" target="_blank" rel="noopener" class="nav__resume">Résumé&nbsp;↗</a>
+      <button id="theme-toggle" class="nav__toggle" aria-label="Toggle theme">☼</button>
     </div>
   </header>
 
   <main id="top">
     <!-- ============ HERO ============ -->
-    <section class="hero" id="hero">
-      <div class="hero__dangler" aria-hidden="true">
-        <span class="hero__thread"></span>
-        <svg class="hero__spider" aria-hidden="true"><use href="#spider-emblem"/></svg>
-      </div>
-
-      <svg class="hero__emblem" aria-hidden="true"><use href="#spider-emblem"/></svg>
-      <p class="hero__eyebrow"><span class="hero__eyebrow-tag">thwip!</span> Your friendly neighborhood Software Engineer · Gurgaon, India</p>
-      <h1 class="hero__name" data-text="Vishwaksen Pujala">Vishwaksen Pujala</h1>
+    <section class="hero">
+      <p class="hero__eyebrow">Software Engineer · Gurgaon, India</p>
+      <h1 class="hero__name">Vishwaksen Pujala</h1>
       <div class="hero__lower">
         <div class="hero__lower-text">
           <p class="hero__tagline">I build the systems that keep a startup running: <span class="accent">backend, data, infrastructure, full-stack and AI.</span></p>
-          <p class="hero__intro">Computer Science graduate from IIIT Sri City, currently shipping production software at an early-stage AI company. I take whatever part of the stack the problem needs — with great power comes great responsibility.</p>
+          <p class="hero__intro">Computer Science graduate from IIIT Sri City, currently shipping production software at an early-stage AI company. I take whatever part of the stack the problem needs.</p>
           <div class="hero__cta">
             <a href="#work" class="btn btn--primary">View my work</a>
             <a href="resume.pdf" target="_blank" rel="noopener" class="btn btn--ghost">Download résumé</a>
@@ -129,29 +58,16 @@
           </div>
         </div>
         <div class="hero__photo-wrap">
-          <svg class="hero__photo-web" viewBox="0 0 120 120" aria-hidden="true">
-            <g fill="none" stroke="currentColor" stroke-width="1.2">
-              <path pathLength="1" d="M0 0 L120 120 M40 0 L120 80 M80 0 L120 40 M0 40 L80 120 M0 80 L40 120"/>
-              <path pathLength="1" d="M30 0 Q28 28 0 30 M60 0 Q56 56 0 60 M90 0 Q84 84 0 90 M120 10 Q110 110 10 120"/>
-            </g>
-          </svg>
           <img class="hero__photo" src="assets/vishwak.jpg" width="720" height="720" alt="Vishwaksen Pujala" />
         </div>
       </div>
     </section>
 
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee__inner">
-        <span>The amazing portfolio · with great code comes great responsibility · backend · data · infra · AI · thwip! ·&nbsp;</span>
-        <span>The amazing portfolio · with great code comes great responsibility · backend · data · infra · AI · thwip! ·&nbsp;</span>
-      </div>
-    </div>
-
     <!-- ============ ABOUT ============ -->
-    <section class="section" id="about" data-watermark="Amazing">
+    <section class="section" id="about">
       <div class="sec-head">
-        <span class="sec-num">Issue #01</span>
-        <h2 class="sec-title" data-text="About">About</h2>
+        <span class="sec-num">01</span>
+        <h2 class="sec-title">About</h2>
         <span class="sec-rule"></span>
       </div>
       <div class="about">
@@ -167,7 +83,7 @@
           </ul>
         </div>
         <aside class="about__side">
-          <svg class="about__emblem" aria-hidden="true"><use href="#spider-emblem"/></svg>
+          <div class="about__mono">VP</div>
           <p class="about__name">Vishwaksen Pujala</p>
           <p class="about__role">Software Engineer</p>
           <a class="about__resume" href="resume.pdf" target="_blank" rel="noopener">→ Read my résumé</a>
@@ -176,30 +92,30 @@
     </section>
 
     <!-- ============ WHAT I DO ============ -->
-    <section class="section" id="roles" data-watermark="Spectacular">
+    <section class="section" id="roles">
       <div class="sec-head">
-        <span class="sec-num">Issue #02</span>
-        <h2 class="sec-title" data-text="What I do">What I do</h2>
+        <span class="sec-num">02</span>
+        <h2 class="sec-title">What I do</h2>
         <span class="sec-rule"></span>
       </div>
       <div class="roles" id="roles-list"></div>
     </section>
 
     <!-- ============ SKILLS ============ -->
-    <section class="section" id="skills" data-watermark="Ultimate">
+    <section class="section" id="skills">
       <div class="sec-head">
-        <span class="sec-num">Issue #03</span>
-        <h2 class="sec-title" data-text="Toolbox">Toolbox</h2>
+        <span class="sec-num">03</span>
+        <h2 class="sec-title">Toolbox</h2>
         <span class="sec-rule"></span>
       </div>
       <div class="skills" id="skills-list"></div>
     </section>
 
     <!-- ============ WORK ============ -->
-    <section class="section" id="work" data-watermark="Web-slinger">
+    <section class="section" id="work">
       <div class="sec-head">
-        <span class="sec-num">Issue #04</span>
-        <h2 class="sec-title" data-text="Selected work">Selected work</h2>
+        <span class="sec-num">04</span>
+        <h2 class="sec-title">Selected work</h2>
         <span class="sec-rule"></span>
         <a class="sec-link" href="https://github.com/Vishwaksen0124?tab=repositories" target="_blank" rel="noopener">All repos ↗</a>
       </div>
@@ -207,10 +123,10 @@
     </section>
 
     <!-- ============ EXPERIENCE ============ -->
-    <section class="section" id="experience" data-watermark="Friendly">
+    <section class="section" id="experience">
       <div class="sec-head">
-        <span class="sec-num">Issue #05</span>
-        <h2 class="sec-title" data-text="Experience">Experience</h2>
+        <span class="sec-num">05</span>
+        <h2 class="sec-title">Experience</h2>
         <span class="sec-rule"></span>
       </div>
       <article class="exp">
@@ -232,10 +148,10 @@
     </section>
 
     <!-- ============ EDUCATION ============ -->
-    <section class="section" id="education" data-watermark="Neighborhood">
+    <section class="section" id="education">
       <div class="sec-head">
-        <span class="sec-num">Issue #06</span>
-        <h2 class="sec-title" data-text="Education">Education</h2>
+        <span class="sec-num">06</span>
+        <h2 class="sec-title">Education</h2>
         <span class="sec-rule"></span>
       </div>
       <article class="exp">
@@ -253,21 +169,14 @@
       </article>
     </section>
 
-    <div class="marquee marquee--blue" aria-hidden="true">
-      <div class="marquee__inner">
-        <span>Open to work · software · backend · AI engineer · your friendly neighborhood problem solver · say hello ·&nbsp;</span>
-        <span>Open to work · software · backend · AI engineer · your friendly neighborhood problem solver · say hello ·&nbsp;</span>
-      </div>
-    </div>
-
     <!-- ============ CONTACT ============ -->
-    <section class="section section--contact" id="contact" data-watermark="Thwip!">
+    <section class="section section--contact" id="contact">
       <div class="sec-head">
-        <span class="sec-num">Issue #07</span>
-        <h2 class="sec-title" data-text="Contact">Contact</h2>
+        <span class="sec-num">07</span>
+        <h2 class="sec-title">Contact</h2>
         <span class="sec-rule"></span>
       </div>
-      <p class="contact__lead">I'm open to full-time Software / Backend / AI Engineer roles and interesting collaborations. The fastest way to reach me is email — no spider-signal required — and I'll get back to you.</p>
+      <p class="contact__lead">I'm open to full-time Software / Backend / AI Engineer roles and interesting collaborations. The fastest way to reach me is email, and I'll get back to you.</p>
       <a class="contact__email" href="mailto:vishwaksenpujala@gmail.com">vishwaksenpujala@gmail.com</a>
       <div class="contact__row">
         <a href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener">GitHub ↗</a>
@@ -279,11 +188,9 @@
 
   <footer class="foot">
     <span>© <span id="year"></span> Vishwaksen Pujala</span>
-    <svg class="foot__emblem" aria-hidden="true"><use href="#spider-emblem"/></svg>
-    <span>With great power comes great responsibility · Hand-coded · GitHub Pages</span>
+    <span>Hand-coded · GitHub Pages</span>
   </footer>
 
-  <script src="script.js?v=22"></script>
-  <script type="module" src="city3d.js?v=22"></script>
+  <script src="script.js"></script>
 </body>
 </html>
