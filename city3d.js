@@ -69,7 +69,7 @@ function build() {
   scene.add(new THREE.AmbientLight(c.bg.clone().lerp(c.silk, 0.6), 1.7));
 
   // instanced canyon lining the avenue, receding into -z
-  const COUNT = innerWidth < 760 ? 170 : 300;
+  const COUNT = innerWidth < 760 ? 130 : 220;
   const geo = new THREE.BoxGeometry(1, 1, 1);
   geo.translate(0, 0.5, 0);
   buildMesh = new THREE.InstancedMesh(geo, new THREE.MeshLambertMaterial({ color: c.near }), COUNT);
@@ -117,7 +117,7 @@ function build() {
 
   // silk motes drifting high above the street
   const motes = [];
-  for (let i = 0; i < 340; i++) {
+  for (let i = 0; i < 220; i++) {
     motes.push((Math.random() - 0.5) * 560, 18 + Math.random() * 230, 60 - Math.random() * 940);
   }
   fieldPts = new THREE.Points(
