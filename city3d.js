@@ -1,8 +1,13 @@
 /* ============================================================
    3D night city — Three.js canyon of instanced buildings with
-   glowing windows. Scroll flies the camera down the avenue;
-   the mouse banks it. Tall-tower tops are projected to screen
-   space so the 2D Spidey can anchor his webs to real buildings.
+   glowing windows. Scroll flies the camera down the avenue.
+   A posable Spider-Man hangs from a web in front of the camera
+   and strikes a different iconic pose for every section.
+
+   Want a real model instead of the built figure? Drop a rigged
+   GLB at assets/spiderman.glb (or set window.SPIDEY_MODEL_URL
+   before this script). It will be shown hanging; the built
+   figure stays as the always-works fallback.
    ============================================================ */
 import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
 
@@ -12,42 +17,290 @@ const canvas = document.getElementById("city3d");
 let renderer, scene, camera, buildMesh, windowPts, fieldPts;
 let W = innerWidth, H = innerHeight;
 const tall = [];
-const mouse = { x: 0 };
+const mouse = { x: 0, y: 0 };
 const tmp = new THREE.Vector3();
+const tmp2 = new THREE.Vector3();
+const up = new THREE.Vector3(0, 1, 0);
 
 function cssVar(n, d) {
   const v = getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   return v || d;
 }
+function hexVar(n, d) { return new THREE.Color(cssVar(n, d)); }
 
 function colors() {
   const silk = cssVar("--silk-rgb", "214,222,244").split(",").map(Number);
   return {
-    bg: new THREE.Color(cssVar("--bg", "#07090f")),
-    near: new THREE.Color(cssVar("--surface-2", "#121831")).lerp(new THREE.Color(cssVar("--bg", "#07090f")), -0.6),
-    win: new THREE.Color(cssVar("--city-window", "#ffd66b")),
+    bg: hexVar("--bg", "#07090f"),
+    near: hexVar("--surface-2", "#121831").lerp(hexVar("--bg", "#07090f"), -0.6),
+    win: hexVar("--city-window", "#ffd66b"),
     silk: new THREE.Color(silk[0] / 255, silk[1] / 255, silk[2] / 255),
-    body: new THREE.Color(cssVar("--red-bright", "#ff3b41")),
-    limb: new THREE.Color(cssVar("--spidey-limb", "#c41e23"))
+    body: hexVar("--red-bright", "#ff3b41"),
+    legs: hexVar("--blue", "#3d5afe"),
+    eye: hexVar("--spidey-glint", "#f3f5ff")
   };
 }
 
+/* ============================================================
+   Spider-Man rig — nested pivot bones we can pose.
+   ============================================================ */
+const J = {};            // named joints (pivot Groups we rotate)
+let spideyRoot, swayPivot, webLine, webShot, mats;
+
+/* a web rope firing out of his wrist during the web-shooter beat */
+function fireWeb(cyc, thrust) {
+  J.elR.getWorldPosition(tmp);                 // wrist
+  J.shR.getWorldPosition(tmp2);                // shoulder → direction of the arm
+  const dir = tmp.clone().sub(tmp2).normalize();
+  const reach = 26 * Math.min(cyc / 0.35, 1);  // the web streaks outward then holds
+  const lp = webShot.geometry.attributes.position.array;
+  lp[0] = tmp.x; lp[1] = tmp.y; lp[2] = tmp.z;
+  lp[3] = tmp.x + dir.x * reach;
+  lp[4] = tmp.y + dir.y * reach;
+  lp[5] = tmp.z + dir.z * reach;
+  webShot.geometry.attributes.position.needsUpdate = true;
+  webShot.material.opacity = cyc < 0.7 ? 0.9 : 0.9 * (1 - (cyc - 0.7) / 0.3);
+  webShot.visible = true;
+}
+
+function bone(len, rad, mat) {
+  const pivot = new THREE.Group();
+  const mesh = new THREE.Mesh(new THREE.CapsuleGeometry(rad, len, 4, 10), mat);
+  mesh.position.y = -len / 2;       // hangs down from the pivot
+  pivot.add(mesh);
+  const end = new THREE.Group();
+  end.position.y = -len;
+  pivot.add(end);
+  return { pivot, end };
+}
+
+function makeSpidey(c) {
+  const red = new THREE.MeshBasicMaterial({ color: c.body, depthTest: false });
+  const blue = new THREE.MeshBasicMaterial({ color: c.legs, depthTest: false });
+  const white = new THREE.MeshBasicMaterial({ color: c.eye, depthTest: false });
+  mats = { red, blue, white };
+
+  const root = new THREE.Group();
+  const sway = new THREE.Group();   // idle sway pivots here (at the web anchor)
+  root.add(sway);
+  const body = new THREE.Group();
+  sway.add(body);
+  J.body = body;
+
+  // torso + pelvis
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.62, 1.05, 5, 12), red);
+  torso.position.y = 0.95;
+  body.add(torso);
+  const pelvis = new THREE.Mesh(new THREE.CapsuleGeometry(0.55, 0.35, 4, 10), blue);
+  body.add(pelvis);
+
+  // head with the iconic big eyes
+  const head = new THREE.Group();
+  head.position.set(0, 1.95, 0);
+  body.add(head);
+  J.head = head;
+  head.add(new THREE.Mesh(new THREE.SphereGeometry(0.52, 14, 12), red));
+  const eyeGeo = new THREE.SphereGeometry(0.26, 12, 10);
+  for (const sx of [-1, 1]) {
+    const eye = new THREE.Mesh(eyeGeo, white);
+    eye.position.set(sx * 0.24, 0.04, 0.40);
+    eye.scale.set(1.05, 0.62, 0.5);
+    eye.rotation.z = sx * 0.5;
+    head.add(eye);
+  }
+
+  // arms
+  for (const [side, sx] of [["L", 1], ["R", -1]]) {
+    const sh = new THREE.Group();
+    sh.position.set(sx * 0.62, 1.55, 0);
+    body.add(sh);
+    const upper = bone(0.95, 0.18, red);
+    sh.add(upper.pivot);
+    const fore = bone(0.9, 0.15, red);
+    upper.end.add(fore.pivot);
+    J["sh" + side] = sh;
+    J["el" + side] = fore.pivot;
+  }
+  // legs
+  for (const [side, sx] of [["L", 1], ["R", -1]]) {
+    const hip = new THREE.Group();
+    hip.position.set(sx * 0.32, -0.2, 0);
+    body.add(hip);
+    const thigh = bone(1.15, 0.22, blue);
+    hip.add(thigh.pivot);
+    const shin = bone(1.1, 0.18, red);   // red boots
+    thigh.end.add(shin.pivot);
+    J["hip" + side] = hip;
+    J["kn" + side] = shin.pivot;
+  }
+
+  root.traverse((o) => { o.renderOrder = 12; });
+  root.scale.setScalar(1.9);
+  return root;
+}
+
+/* ---- poses: target euler angles per joint (radians) ----
+   identity = upright, arms straight down, legs straight down. */
+const REST = { body: [0, 0, 0], head: [0, 0, 0],
+  shL: [0, 0, 0.12], shR: [0, 0, -0.12], elL: [0, 0, 0], elR: [0, 0, 0],
+  hipL: [0, 0, 0.05], hipR: [0, 0, -0.05], knL: [0, 0, 0], knR: [0, 0, 0] };
+
+const P = (o) => Object.assign({}, REST, o);
+const PI = Math.PI;
+
+// one pose per section, in DOM order
+const POSES = [
+  // hero — upside-down hang, the signature image
+  P({ root: [0, 0.2, 0], web: "feet", invert: true,
+      shL: [-2.5, 0, 0.5], shR: [-2.5, 0, -0.5], elL: [0.5, 0, 0], elR: [0.5, 0, 0],
+      hipL: [0.15, 0, 0.16], hipR: [0.15, 0, -0.16], knL: [0.6, 0, 0], knR: [0.45, 0, 0],
+      head: [-0.5, 0, 0] }),
+  // about — perched crouch, turning the masked face to camera
+  P({ root: [0, 0.5, 0.05], web: "hand", action: "face",
+      shL: [-0.7, 0, 0.5], shR: [0.4, 0, -0.3], elL: [-1.4, 0, 0], elR: [-0.6, 0, 0],
+      hipL: [1.5, 0, 0.2], hipR: [1.3, 0, -0.2], knL: [-1.7, 0, 0], knR: [-1.5, 0, 0],
+      head: [0.25, -0.4, 0] }),
+  // what I do — web-shooting thwip toward the content
+  P({ root: [0, 0.6, 0], web: "hand", action: "thwip",
+      shL: [-1.5, 0, 0.1], shR: [0.7, 0, -0.6], elL: [-0.4, -0.5, 0], elR: [-0.5, 0, 0],
+      hipL: [0.4, 0, 0.15], hipR: [-0.2, 0, -0.2], knL: [-0.7, 0, 0], knR: [-0.3, 0, 0],
+      head: [0.1, -0.5, 0] }),
+  // skills — mid-air spread eagle, slow spin
+  P({ root: [0, 0, 0], web: "none", spin: true,
+      shL: [-1.9, 0, 0.7], shR: [-1.9, 0, -0.7], elL: [-0.3, 0, 0], elR: [-0.3, 0, 0],
+      hipL: [0.5, 0, 0.5], hipR: [0.5, 0, -0.5], knL: [-0.5, 0, 0], knR: [-0.5, 0, 0],
+      head: [0.1, 0, 0] }),
+  // work — perched, pointing out at the panels
+  P({ root: [0, 0.55, 0], web: "hand", action: "point",
+      shL: [0.2, 0, 0.3], shR: [-1.7, -0.6, -0.2], elL: [-1.0, 0, 0], elR: [0, 0, 0],
+      hipL: [1.3, 0, 0.2], hipR: [1.1, 0, -0.2], knL: [-1.6, 0, 0], knR: [-1.4, 0, 0],
+      head: [0.1, -0.6, 0] }),
+  // experience — upside-down hang again, arms folded
+  P({ root: [0, -0.3, 0], web: "feet", invert: true,
+      shL: [-2.9, 0, 0.7], shR: [-2.9, 0, -0.7], elL: [-1.5, 0, 0], elR: [-1.5, 0, 0],
+      hipL: [0.1, 0, 0.14], hipR: [0.1, 0, -0.14], knL: [0.4, 0, 0], knR: [0.5, 0, 0],
+      head: [-0.4, 0, 0] }),
+  // education — thinking, hand tapping near the head
+  P({ root: [0, 0.4, 0], web: "hand", action: "tap",
+      shL: [-0.4, 0, 0.4], shR: [-2.6, -0.5, -0.3], elL: [-0.5, 0, 0], elR: [-2.2, 0, 0],
+      hipL: [0.3, 0, 0.15], hipR: [0.2, 0, -0.15], knL: [-0.5, 0, 0], knR: [-0.4, 0, 0],
+      head: [0.2, -0.3, 0.1] }),
+  // contact — friendly wave hello
+  P({ root: [0, 0.5, 0], web: "hand", action: "wave",
+      shL: [0.1, 0, 0.4], shR: [-2.8, 0, -0.4], elL: [-0.3, 0, 0], elR: [-0.5, 0, 0],
+      hipL: [0.2, 0, 0.15], hipR: [0.15, 0, -0.15], knL: [-0.4, 0, 0], knR: [-0.3, 0, 0],
+      head: [0.15, -0.4, 0] })
+];
+
+// live (lerped) euler state
+const live = {};
+for (const k in REST) live[k] = REST[k].slice();
+let liveRootY = 0, liveInvert = 0;
+let targetPose = POSES[0];
+
+function setTargetPose(i) { targetPose = POSES[((i % POSES.length) + POSES.length) % POSES.length]; }
+
+function applyPose(dt, t) {
+  const k2 = Math.min(dt * 3.2, 1);
+  for (const j in REST) {
+    const tgt = targetPose[j] || REST[j];
+    for (let a = 0; a < 3; a++) live[j][a] += (tgt[a] - live[j][a]) * k2;
+    if (J[j]) J[j].rotation.set(live[j][0], live[j][1], live[j][2]);
+  }
+
+  // per-section signature ACTION layered on top of the held pose
+  const T = t / 1000;
+  const act = targetPose.action;
+  if (act === "wave") {
+    J.shR.rotation.z += Math.sin(T * 7) * 0.45;           // hand waves hello
+    J.elR.rotation.x += Math.sin(T * 7 + 0.6) * 0.2;
+  } else if (act === "tap") {
+    J.elR.rotation.x += (Math.sin(T * 4) * 0.5 - 0.5) * 0.3; // fingers tap, thinking
+    J.head.rotation.z += Math.sin(T * 1.3) * 0.08;
+  } else if (act === "point") {
+    J.shR.rotation.x += Math.sin(T * 2) * 0.12;            // gestures at the panels
+  } else if (act === "face") {
+    J.head.rotation.y += Math.sin(T * 0.8) * 0.5;          // mask scans across to camera
+  } else if (act === "thwip") {
+    const cyc = (T * 0.8) % 1;                              // periodic web-shot thrust
+    const thrust = cyc < 0.18 ? Math.sin((cyc / 0.18) * PI) : 0;
+    J.shR.rotation.x -= thrust * 0.5;
+    J.elR.rotation.x += thrust * 0.4;
+    fireWeb(cyc, thrust);
+  } else {
+    webShot.visible = false;
+  }
+  if (act !== "thwip") webShot.visible = false;
+  // body inversion (upside-down) eased in/out
+  const invTgt = targetPose.invert ? 1 : 0;
+  liveInvert += (invTgt - liveInvert) * k2;
+  // facing yaw toward the content
+  const ry = (targetPose.root ? targetPose.root[1] : 0);
+  liveRootY += (ry - liveRootY) * k2;
+
+  // idle sway + breathing
+  swayPivot.rotation.z = Math.sin(t / 1400) * 0.06;
+  swayPivot.rotation.x = Math.sin(t / 1750) * 0.05;
+  spideyRoot.rotation.y = liveRootY + Math.sin(t / 2600) * 0.05;
+  J.body.rotation.x = live.body[0] + liveInvert * PI; // flip head-down for hangs
+  if (targetPose.spin) spideyRoot.rotation.y += t / 2600; // skills spin
+
+  // web thread: from an anchor above down to his current attach point
+  const lp = webLine.geometry.attributes.position.array;
+  if (targetPose.web && targetPose.web !== "none") {
+    spideyRoot.getWorldPosition(tmp);
+    const ax = tmp.x, ay = tmp.y, az = tmp.z;
+    // attach near feet when inverted, near a hand otherwise
+    const reach = targetPose.web === "feet" ? 3.4 : 2.2;
+    lp[0] = ax + 1.2; lp[1] = ay + 9.5; lp[2] = az;     // anchor up out of frame
+    lp[3] = ax + (targetPose.web === "feet" ? 0 : 1.6);
+    lp[4] = ay + reach; lp[5] = az;
+    webLine.visible = true;
+    webLine.geometry.attributes.position.needsUpdate = true;
+  } else {
+    webLine.visible = false;
+  }
+
+  // screen position for the 2D click web-shots
+  spideyRoot.getWorldPosition(tmp).project(camera);
+  window.SPIDEY_SCREEN = tmp.z < 1
+    ? { x: (tmp.x * 0.5 + 0.5) * W, y: (-tmp.y * 0.5 + 0.5) * H }
+    : null;
+}
+
+/* ============================================================
+   Section tracking — which section owns the viewport now.
+   ============================================================ */
+let sections = [];
+let activeIdx = -1;
+function trackSection() {
+  if (window.__lockPose !== undefined) { setTargetPose(window.__lockPose); return; }
+  if (!sections.length) sections = [...document.querySelectorAll("#hero, main .section")];
+  const mid = scrollY + innerHeight * 0.5;
+  let idx = 0;
+  for (let i = 0; i < sections.length; i++) {
+    if (sections[i].offsetTop <= mid) idx = i;
+  }
+  if (idx !== activeIdx) { activeIdx = idx; setTargetPose(idx); }
+}
+
+/* ============================================================
+   City
+   ============================================================ */
 function build() {
   const c = colors();
   scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(c.bg, 0.0036);
   camera = new THREE.PerspectiveCamera(58, W / H, 0.1, 1400);
 
-  // cold moonlight so building faces shade differently and read as 3D
   const moon = new THREE.DirectionalLight(c.silk.clone(), 1.9);
   moon.position.set(0.55, 1, 0.35);
   scene.add(moon);
   scene.add(new THREE.AmbientLight(c.bg.clone().lerp(c.silk, 0.45), 1.3));
 
-  // buildings: an instanced canyon lining the avenue, receding into -z
   const COUNT = innerWidth < 760 ? 150 : 260;
   const geo = new THREE.BoxGeometry(1, 1, 1);
-  geo.translate(0, 0.5, 0); // grow upward from the street
+  geo.translate(0, 0.5, 0);
   buildMesh = new THREE.InstancedMesh(geo, new THREE.MeshLambertMaterial({ color: c.near }), COUNT);
   const m = new THREE.Matrix4();
   const winPos = [];
@@ -64,7 +317,6 @@ function build() {
     m.setPosition(x, 0, z);
     buildMesh.setMatrixAt(i, m);
     if (isTall) tall.push({ x, y: h, z });
-    // lit windows on the avenue-facing wall
     const face = x > 0 ? x - w / 2 - 0.3 : x + w / 2 + 0.3;
     for (let wy = 4; wy < h - 3; wy += 5.5) {
       for (let wz = z - d / 2 + 2; wz < z + d / 2 - 1; wz += 4.5) {
@@ -80,7 +332,6 @@ function build() {
   );
   scene.add(windowPts);
 
-  // silk motes drifting high above the streets
   const motes = [];
   for (let i = 0; i < 320; i++) {
     motes.push((Math.random() - 0.5) * 520, 20 + Math.random() * 210, 60 - Math.random() * 860);
@@ -91,134 +342,30 @@ function build() {
   );
   scene.add(fieldPts);
 
-  const rig = makeSpidey(c);
-  spideyGroup = rig.g;
-  spideyMats = rig;
-  scene.add(spideyGroup);
+  // Spider-Man, parented to the camera so he is always in view (right side)
+  spideyRoot = makeSpidey(c);
+  swayPivot = spideyRoot.children[0];
+  spideyRoot.position.set(11, -0.5, -31);
+  camera.add(spideyRoot);
+  scene.add(camera);
+
   webLine = new THREE.Line(
     new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(new Float32Array(6), 3)),
-    new THREE.LineBasicMaterial({ color: c.silk, transparent: true, opacity: 0.7, depthTest: false })
+    new THREE.LineBasicMaterial({ color: c.silk, transparent: true, opacity: 0.75, depthTest: false })
   );
-  webLine.renderOrder = 9;
+  webLine.renderOrder = 11;
   scene.add(webLine);
-  respawnSpidey(80);
-}
 
-/* ---- 3D Spider-Man: pendulum physics through the canyon ---- */
-const SP = { mode: "swing", pos: new THREE.Vector3(), v: new THREE.Vector3(),
-  anchor: new THREE.Vector3(), f: new THREE.Vector3(0, 0, -1), L: 50, th: -0.9, om: 0.9 };
-const G_W = 62;
-let spideyGroup, spideyMats, webLine;
-const up = new THREE.Vector3(0, 1, 0);
-const hv = new THREE.Vector3(), tangent = new THREE.Vector3(), ropeDir = new THREE.Vector3();
+  webShot = new THREE.Line(
+    new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(new Float32Array(6), 3)),
+    new THREE.LineBasicMaterial({ color: c.eye, transparent: true, opacity: 0.9, depthTest: false })
+  );
+  webShot.renderOrder = 11;
+  webShot.visible = false;
+  scene.add(webShot);  // positions are written in world space each frame
 
-function makeSpidey(c) {
-  const g = new THREE.Group();
-  const red = new THREE.MeshBasicMaterial({ color: c.body, depthTest: false });
-  const dark = new THREE.MeshBasicMaterial({ color: c.limb, depthTest: false });
-  const torso = new THREE.Mesh(new THREE.SphereGeometry(1.1, 10, 8), red);
-  torso.scale.set(0.75, 1.25, 0.55);
-  g.add(torso);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.62, 10, 8), red);
-  head.position.set(0, 1.7, 0.15);
-  g.add(head);
-  const hips = new THREE.Mesh(new THREE.SphereGeometry(0.8, 10, 8), dark);
-  hips.scale.set(0.7, 0.9, 0.55);
-  hips.position.set(0, -1.35, -0.1);
-  g.add(hips);
-  const limb = (x1, y1, z1, x2, y2, z2) => {
-    const v1 = new THREE.Vector3(x1, y1, z1), v2 = new THREE.Vector3(x2, y2, z2);
-    const seg = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.13, v1.distanceTo(v2), 5), dark);
-    seg.position.copy(v1).lerp(v2, 0.5);
-    seg.quaternion.setFromUnitVectors(up, v2.clone().sub(v1).normalize());
-    g.add(seg);
-  };
-  limb(0.4, 0.9, 0, 1.1, 2.4, 0.1); limb(1.1, 2.4, 0.1, 1.5, 3.8, 0.2);      // web arm
-  limb(-0.5, 0.8, 0, -1.5, 0.2, -0.2); limb(-1.5, 0.2, -0.2, -2.2, -0.7, -0.3); // trailing arm
-  limb(0.3, -2, 0, 1.2, -2.9, 0.4); limb(1.2, -2.9, 0.4, 0.9, -4.2, 0.2);    // tucked legs
-  limb(-0.3, -2, 0, -1.1, -3, -0.2); limb(-1.1, -3, -0.2, -1.6, -4.3, 0);
-  g.scale.setScalar(3.0);
-  g.renderOrder = 10;
-  g.traverse((o) => { o.renderOrder = 10; });
-  return { g, red, dark };
-}
-
-function pickAnchor() {
-  const z0 = SP.pos.z;
-  const c = tall.filter((t) => t.z < z0 - 25 && t.z > z0 - 160 && t.y > SP.pos.y + 24);
-  if (c.length) {
-    const t = c[Math.floor(Math.random() * c.length)];
-    // grab the tower's wall near his height so the swing stays mid-frame
-    return new THREE.Vector3(t.x * 0.5, Math.min(t.y, SP.pos.y + 26 + Math.random() * 16), t.z);
-  }
-  return new THREE.Vector3(SP.pos.x * 0.3, SP.pos.y + 34, z0 - 80);
-}
-
-function attachWeb() {
-  SP.anchor.copy(pickAnchor());
-  hv.copy(SP.v); hv.y = 0;
-  if (hv.lengthSq() < 1) hv.set(0, 0, -1);
-  SP.f.copy(hv.normalize());
-  const r = SP.pos.clone().sub(SP.anchor);
-  SP.L = Math.min(Math.max(r.length(), 20), 55);
-  hv.copy(r); hv.y = 0;
-  SP.th = Math.atan2(hv.dot(SP.f), -r.y);
-  tangent.copy(SP.f).multiplyScalar(Math.cos(SP.th)).addScaledVector(up, Math.sin(SP.th));
-  SP.om = Math.max(SP.v.dot(tangent) / SP.L, 0.85);
-  SP.mode = "swing";
-}
-
-function respawnSpidey(camZ) {
-  SP.pos.set((Math.random() - 0.5) * 48, 28 + Math.random() * 14, camZ - 78);
-  SP.v.set(0, 0, -24);
-  attachWeb();
-  SP.th = Math.min(SP.th, -0.7);
-  SP.om = 1.0;
-}
-
-function stepSpidey(dt, camZ) {
-  if (SP.mode === "swing") {
-    SP.om += (-G_W / SP.L) * Math.sin(SP.th) * dt;
-    SP.om *= 0.9995;
-    SP.th += SP.om * dt;
-    SP.pos.copy(SP.anchor)
-      .addScaledVector(SP.f, SP.L * Math.sin(SP.th))
-      .addScaledVector(up, -SP.L * Math.cos(SP.th));
-    if (SP.th > 0.55 && SP.om > 0.75) {
-      tangent.copy(SP.f).multiplyScalar(Math.cos(SP.th)).addScaledVector(up, Math.sin(SP.th));
-      SP.v.copy(tangent).multiplyScalar(SP.om * SP.L);
-      SP.mode = "fly";
-    }
-  } else {
-    SP.v.y -= G_W * dt;
-    SP.pos.addScaledVector(SP.v, dt);
-    if (SP.v.y < -12) attachWeb();
-  }
-  // keep him in the camera's window of the avenue, at readable height
-  if (SP.pos.z > camZ - 32 || SP.pos.z < camZ - 190 || SP.pos.y < 6 || SP.pos.y > 85 ||
-      Math.abs(SP.pos.x) > 85) {
-    respawnSpidey(camZ);
-  }
-
-  spideyGroup.position.copy(SP.pos);
-  ropeDir.copy(SP.anchor).sub(SP.pos).normalize();
-  spideyGroup.quaternion.setFromUnitVectors(up, ropeDir);
-  // web line from hand to anchor (hidden mid-flight)
-  const lp = webLine.geometry.attributes.position.array;
-  if (SP.mode === "swing") {
-    const hand = SP.pos.clone().addScaledVector(ropeDir, 6);
-    lp[0] = hand.x; lp[1] = hand.y; lp[2] = hand.z;
-    lp[3] = SP.anchor.x; lp[4] = SP.anchor.y; lp[5] = SP.anchor.z;
-    webLine.visible = true;
-  } else {
-    webLine.visible = false;
-  }
-  webLine.geometry.attributes.position.needsUpdate = true;
-  // expose his screen position so 2D click web-shots fire from him
-  tmp.copy(SP.pos).project(camera);
-  window.SPIDEY_SCREEN = tmp.z < 1
-    ? { x: (tmp.x * 0.5 + 0.5) * W, y: (-tmp.y * 0.5 + 0.5) * H }
-    : null;
+  trackSection();
+  tryLoadModel(c);
 }
 
 function retheme() {
@@ -227,31 +374,63 @@ function retheme() {
   buildMesh.material.color.copy(c.near);
   windowPts.material.color.copy(c.win);
   fieldPts.material.color.copy(c.silk);
-  spideyMats.red.color.copy(c.body);
-  spideyMats.dark.color.copy(c.limb);
+  mats.red.color.copy(c.body);
+  mats.blue.color.copy(c.legs);
+  mats.white.color.copy(c.eye);
   webLine.material.color.copy(c.silk);
+  webShot.material.color.copy(c.eye);
 }
 
+/* optional: swap in a real GLB model if one is provided */
+async function tryLoadModel(c) {
+  const url = window.SPIDEY_MODEL_URL || "assets/spiderman.glb";
+  try {
+    const head = await fetch(url, { method: "HEAD" });
+    if (!head.ok) return;                       // no model supplied — keep the built figure
+    const { GLTFLoader } = await import("https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js");
+    new GLTFLoader().load(url, (gltf) => {
+      const model = gltf.scene;
+      const box = new THREE.Box3().setFromObject(model);
+      const s = 7 / (box.max.y - box.min.y || 1);
+      model.scale.setScalar(s * 1.9);
+      model.traverse((o) => { if (o.material) { o.material.depthTest = false; o.renderOrder = 12; } });
+      // hide built figure, show the model in its place
+      spideyRoot.children[0].visible = false;
+      spideyRoot.add(model);
+      window.__spideyModel = model;
+    });
+  } catch (e) { /* keep the built figure */ }
+}
+
+/* ============================================================
+   Loop
+   ============================================================ */
 let raf, lastT = 0;
+let bankTarget = 0, bank = 0;
 function frame(t) {
-  const dtMs = lastT ? t - lastT : 16;
+  const dt = Math.min((lastT ? t - lastT : 16) / 1000, 0.05);
   lastT = t;
   const max = document.documentElement.scrollHeight - innerHeight;
   const p = max > 0 ? Math.min(1, scrollY / max) : 0;
-  const cz = 80 - p * 580; // scrolling flies you down the avenue
+  const cz = 80 - p * 580;
+
+  trackSection();
+  // gentle per-section camera bank, plus mouse parallax
+  bankTarget = (activeIdx % 2 ? 14 : -14);
+  bank += (bankTarget - bank) * 0.02;
   camera.position.x += (mouse.x * 10 - camera.position.x) * 0.04;
   camera.position.y = 38 - p * 6 + Math.sin(t / 2600) * 0.8;
   camera.position.z = cz;
-  camera.lookAt(camera.position.x * 0.35, 26, cz - 190);
+  camera.lookAt(camera.position.x * 0.35 + bank, 26, cz - 190);
+
   fieldPts.rotation.y = t / 90000;
-  stepSpidey(Math.min(dtMs / 1000, 0.033), cz);
+  applyPose(dt, t);
   renderer.render(scene, camera);
   raf = requestAnimationFrame(frame);
 }
 
 function resize() {
-  W = innerWidth;
-  H = innerHeight;
+  W = innerWidth; H = innerHeight;
   camera.aspect = W / H;
   camera.updateProjectionMatrix();
   renderer.setSize(W, H, false);
@@ -263,20 +442,22 @@ try {
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75));
   build();
   resize();
-  addEventListener("resize", resize);
-  addEventListener("pointermove", (e) => { mouse.x = (e.clientX / W) * 2 - 1; }, { passive: true });
+  addEventListener("resize", () => { sections = []; resize(); });
+  addEventListener("pointermove", (e) => {
+    mouse.x = (e.clientX / W) * 2 - 1;
+    mouse.y = (e.clientY / H) * 2 - 1;
+  }, { passive: true });
   document.addEventListener("vp-theme", retheme);
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) cancelAnimationFrame(raf);
-    else if (!REDUCED) raf = requestAnimationFrame(frame);
+    else if (!REDUCED) { lastT = 0; raf = requestAnimationFrame(frame); }
   });
   if (REDUCED) {
-    stepSpidey(0.016, 80);
+    applyPose(1, 0);
     renderer.render(scene, camera);
   } else {
     raf = requestAnimationFrame(frame);
   }
 } catch (e) {
-  // WebGL unavailable — the page still works on its gradient sky
   console.warn("3D city unavailable:", e);
 }
