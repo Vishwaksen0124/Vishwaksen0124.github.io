@@ -73,9 +73,6 @@ function refreshTheme() {
   THEME.spideyBody = v("--spidey-body", "#e62429");
   THEME.spideyLimb = v("--spidey-limb", "#c41e23");
   THEME.spideyGlint = v("--spidey-glint", "#f3f5ff");
-  THEME.cityFar = v("--city-far", "#101831");
-  THEME.cityNear = v("--city-near", "#04060c");
-  THEME.cityWindow = v("--city-window", "#ffd66b");
 }
 
 function initThemes() {
@@ -90,7 +87,7 @@ function initThemes() {
     else root.setAttribute("data-theme", t);
     try { localStorage.setItem("vp-theme", t); } catch (e) {}
     refreshTheme();
-    buildSkyline();
+    document.dispatchEvent(new CustomEvent("vp-theme"));
     mark();
   }));
   refreshTheme();
@@ -102,65 +99,7 @@ function initThemes() {
    lit, flickering windows. Tower tops are collected so Spidey
    can anchor his webs to real buildings.
    ============================================================ */
-const CITY = { towers: [] };
-
-function buildSkyline() {
-  const holder = document.getElementById("city");
-  if (!holder) return;
-  const W = innerWidth, H = innerHeight;
-  CITY.towers = [];
-
-  function layer(cls, maxH, fill, withWindows, towerEvery) {
-    let rects = "", windows = "", x = -20, i = 0;
-    while (x < W + 20) {
-      const isTower = towerEvery && i % towerEvery === towerEvery - 1;
-      const w = isTower ? rnd(46, 70) : rnd(38, 105);
-      const h = isTower ? rnd(maxH * 1.7, maxH * 2.3) : rnd(maxH * 0.45, maxH);
-      const top = H - h;
-      rects += `<rect x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}"/>`;
-      if (isTower) {
-        rects += `<rect x="${(x + w / 2 - 1).toFixed(1)}" y="${(top - 26).toFixed(1)}" width="2" height="26"/>`;
-        CITY.towers.push({ x: x + w / 2, y: top - 26 });
-      }
-      if (withWindows) {
-        for (let wx = x + 6; wx < x + w - 6; wx += 11) {
-          for (let wy = top + 9; wy < H - 14; wy += 15) {
-            if (Math.random() < 0.30) {
-              const flick = Math.random() < 0.09 ? ` class="win-f" style="animation-delay:${rnd(0, 4).toFixed(1)}s"` : "";
-              windows += `<rect x="${wx.toFixed(1)}" y="${wy.toFixed(1)}" width="3.2" height="4.6"${flick}/>`;
-            }
-          }
-        }
-      }
-      x += w + rnd(2, 16);
-      i++;
-    }
-    return `<svg class="${cls}" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">
-      <g fill="${fill}">${rects}</g>
-      <g fill="${THEME.cityWindow}" opacity="0.55">${windows}</g>
-    </svg>`;
-  }
-
-  holder.innerHTML =
-    layer("city__far", H * 0.16, THEME.cityFar, false, 0) +
-    layer("city__near", H * 0.13, THEME.cityNear, true, 4);
-
-  CITY.far = holder.querySelector(".city__far");
-  CITY.near = holder.querySelector(".city__near");
-}
-
-function initCityParallax() {
-  let ticking = false;
-  addEventListener("scroll", () => {
-    if (ticking || !CITY.far) return;
-    ticking = true;
-    requestAnimationFrame(() => {
-      CITY.far.style.transform = `translateY(${scrollY * 0.07}px)`;
-      CITY.near.style.transform = `translateY(${scrollY * 0.028}px)`;
-      ticking = false;
-    });
-  }, { passive: true });
-}
+const CITY = (window.CITY = window.CITY || { towers: [] });
 
 /* ============================================================
    The scene canvas — one rAF loop drawing:
@@ -173,10 +112,9 @@ function initScene() {
   const canvas = document.getElementById("web-canvas");
   const ctx = canvas.getContext("2d");
   const DPR = Math.min(devicePixelRatio || 1, 2);
-  let W = 0, H = 0, nodes = [], splats = [], shots = [], trail = [], streaks = [];
+  let W = 0, H = 0, splats = [], shots = [], trail = [], streaks = [];
   let prevScroll = scrollY, svS = 0; // smoothed scroll velocity (px/frame)
   const mouse = { x: -9999, y: -9999 };
-  const LINK_DIST = 170, MOUSE_DIST = 200;
 
   /* ---- Spider-Man swing physics ---- */
   const G = 2400;
@@ -304,31 +242,7 @@ function initScene() {
     W = innerWidth; H = innerHeight;
     canvas.width = W * DPR; canvas.height = H * DPR;
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    const count = Math.min(70, Math.round((W * H) / 21000));
-    nodes = Array.from({ length: count }, () => ({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      vx: rnd(-0.11, 0.11),
-      vy: rnd(-0.11, 0.11),
-      r: rnd(0.8, 2.2),
-      z: rnd(0.25, 1) // depth: far strands barely move with scroll, near ones stream past
-    }));
     if (spidey) resetSpidey();
-  }
-
-  function drawStrand(a, b, alpha) {
-    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-    const dm = Math.hypot(mouse.x - mx, mouse.y - my);
-    const near = Math.max(0, 1 - dm / MOUSE_DIST);
-    const sag = (1 - near) * 9;
-    ctx.strokeStyle = near > 0.05
-      ? `rgba(${THEME.acc}, ${alpha * (0.35 + near * 0.6)})`
-      : `rgba(${THEME.silk}, ${alpha * 0.22})`;
-    ctx.lineWidth = 0.7 + near * 0.5;
-    ctx.beginPath();
-    ctx.moveTo(a.x, a.y);
-    ctx.quadraticCurveTo(mx, my + sag, b.x, b.y);
-    ctx.stroke();
   }
 
   function drawSplat(s, now) {
@@ -419,47 +333,6 @@ function initScene() {
     svS += (svRaw - svS) * 0.12;
     const speed = Math.abs(svS);
 
-    for (const n of nodes) {
-      n.x += n.vx; n.y += n.vy;
-      // depth parallax: the field streams past as you scroll,
-      // near strands (high z) faster than far ones
-      n.y -= svRaw * n.z * 0.55;
-      if (n.x < -20) n.x = W + 20; else if (n.x > W + 20) n.x = -20;
-      if (n.y < -20) n.y = H + 20; else if (n.y > H + 20) n.y = -20;
-      const dx = mouse.x - n.x, dy = mouse.y - n.y;
-      const d = Math.hypot(dx, dy);
-      if (d < MOUSE_DIST && d > 1) {
-        n.x += (dx / d) * 0.18;
-        n.y += (dy / d) * 0.18;
-      }
-    }
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const a = nodes[i], b = nodes[j];
-        const d = Math.hypot(a.x - b.x, a.y - b.y);
-        if (d < LINK_DIST) drawStrand(a, b, 1 - d / LINK_DIST);
-      }
-    }
-    // nodes render as dots at rest, stretching into motion streaks
-    // proportional to scroll speed and their depth
-    for (const n of nodes) {
-      const stretch = svS * n.z * 1.7;
-      const rr = n.r * (0.5 + n.z * 0.7);
-      if (Math.abs(stretch) > 4) {
-        ctx.strokeStyle = `rgba(${THEME.silk}, ${0.4 * n.z})`;
-        ctx.lineWidth = rr;
-        ctx.lineCap = "round";
-        ctx.beginPath();
-        ctx.moveTo(n.x, n.y);
-        ctx.lineTo(n.x, n.y + stretch);
-        ctx.stroke();
-      } else {
-        ctx.fillStyle = `rgba(${THEME.silk}, 0.5)`;
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, rr, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
     // comic speed-lines on hard scrolls, hugging the page edges
     if (speed > 14 && Math.random() < 0.6) {
       const edge = Math.random() < 0.5;
@@ -495,7 +368,7 @@ function initScene() {
   let rsT;
   addEventListener("resize", () => {
     clearTimeout(rsT);
-    rsT = setTimeout(() => { resize(); buildSkyline(); }, 180);
+    rsT = setTimeout(resize, 180);
   });
   addEventListener("pointermove", (e) => {
     mouse.x = e.clientX; mouse.y = e.clientY;
@@ -684,8 +557,6 @@ function initNav() {
 
 document.addEventListener("DOMContentLoaded", () => {
   initThemes();
-  buildSkyline();
-  initCityParallax();
   initSectionWebs();
   renderRoles();
   renderSkills();
