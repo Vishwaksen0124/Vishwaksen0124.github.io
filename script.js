@@ -258,11 +258,8 @@ function initScene() {
 
   addEventListener("pointerdown", (e) => {
     if (REDUCED_MOTION) return;
-    // the 3D Spidey shoots the web from wherever he is on screen
-    const sp = window.SPIDEY_SCREEN;
-    const from = sp && sp.x > -100 && sp.x < W + 100 && sp.y > -100 && sp.y < H + 100
-      ? sp
-      : { x: e.clientX < W / 2 ? -10 : W + 10, y: 60 };
+    // a web zips in from the nearest top corner to the click
+    const from = { x: e.clientX < W / 2 ? -10 : W + 10, y: 60 };
     shots.push({ x0: from.x, y0: from.y, x1: e.clientX, y1: e.clientY, t0: performance.now() });
     if (shots.length > 4) shots.shift();
     const pop = document.createElement("span");
