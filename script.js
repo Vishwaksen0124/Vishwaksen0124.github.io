@@ -261,7 +261,7 @@ function initScene() {
     W = innerWidth; H = innerHeight;
     canvas.width = W * DPR; canvas.height = H * DPR;
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    const count = Math.min(80, Math.round((W * H) / 18000));
+    const count = Math.min(70, Math.round((W * H) / 21000));
     nodes = Array.from({ length: count }, () => ({
       x: Math.random() * W,
       y: Math.random() * H,
@@ -279,7 +279,7 @@ function initScene() {
     const sag = (1 - near) * 9;
     ctx.strokeStyle = near > 0.05
       ? `rgba(255, 76, 82, ${alpha * (0.35 + near * 0.6)})`
-      : `rgba(190, 200, 235, ${alpha * 0.28})`;
+      : `rgba(190, 200, 235, ${alpha * 0.22})`;
     ctx.lineWidth = 0.7 + near * 0.5;
     ctx.beginPath();
     ctx.moveTo(a.x, a.y);
@@ -456,7 +456,7 @@ function letterize() {
   // so each word gets an unbreakable wrapper and lines only break at spaces
   let i = 0;
   el.innerHTML = text.split(" ").map((word) =>
-    `<span class="word">${[...word].map((ch) =>
+    `<span class="word" style="display:inline-block;white-space:nowrap">${[...word].map((ch) =>
       `<span class="ltr" style="animation-delay:${(0.25 + i++ * 0.045).toFixed(2)}s">${ch}</span>`
     ).join("")}</span>`
   ).join(" ");
