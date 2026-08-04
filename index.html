@@ -17,64 +17,103 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%230a0b0a'/><text x='50' y='70' font-size='58' font-family='monospace' font-weight='700' fill='%23c6f135' text-anchor='middle'>V</text></svg>" />
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+      }
+    }
+  </script>
 </head>
 <body>
+  <!-- the structure -->
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="scrim" aria-hidden="true"></div>
+
+  <!-- boot sequence -->
+  <div class="intro" id="intro" aria-hidden="true">
+    <div class="intro__row">
+      <span class="intro__name">VISHWAKSEN&nbsp;PUJALA</span>
+      <span class="intro__count" id="intro-count">000</span>
+    </div>
+    <span class="intro__bar"><i id="intro-bar"></i></span>
+  </div>
+
+  <!-- pointer -->
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <span class="cursor__ring"><b id="cursor-label"></b></span>
+    <span class="cursor__dot"></span>
+  </div>
+
+  <!-- scroll depth rail -->
+  <div class="rail" aria-hidden="true"><span class="rail__fill" id="rail-fill"></span></div>
+
   <header class="nav" id="nav">
-    <a href="#top" class="nav__brand">VP<span class="accent">.</span></a>
+    <a href="#top" class="nav__brand" data-cursor>VP<span class="accent">.</span></a>
     <nav class="nav__links">
-      <a href="#about">About</a>
-      <a href="#roles">What I do</a>
-      <a href="#skills">Skills</a>
-      <a href="#work">Work</a>
-      <a href="#experience">Experience</a>
-      <a href="#contact">Contact</a>
+      <a href="#about" data-cursor>About</a>
+      <a href="#roles" data-cursor>What I do</a>
+      <a href="#skills" data-cursor>Skills</a>
+      <a href="#work" data-cursor>Work</a>
+      <a href="#experience" data-cursor>Experience</a>
+      <a href="#contact" data-cursor>Contact</a>
     </nav>
     <div class="nav__right">
-      <a href="resume.pdf" target="_blank" rel="noopener" class="nav__resume">Résumé&nbsp;↗</a>
-      <button id="theme-toggle" class="nav__toggle" aria-label="Toggle theme">☼</button>
+      <a href="resume.pdf" target="_blank" rel="noopener" class="nav__resume" data-cursor>Résumé&nbsp;↗</a>
+      <button id="motion-toggle" class="nav__toggle" aria-label="Toggle 3D background" title="Toggle 3D background" data-cursor>◍</button>
+      <button id="theme-toggle" class="nav__toggle" aria-label="Toggle theme" data-cursor>☼</button>
     </div>
   </header>
 
+  <!-- everything below is translated by the smooth-scroll rig -->
+  <div id="smooth">
   <main id="top">
     <!-- ============ HERO ============ -->
-    <section class="hero">
-      <p class="hero__eyebrow">Software Engineer · Gurgaon, India</p>
-      <h1 class="hero__name">Vishwaksen Pujala</h1>
+    <section class="hero" data-scene="top">
+      <p class="hero__eyebrow"><span class="hero__pulse"></span>Software Engineer · Gurgaon, India</p>
+      <h1 class="hero__name" data-split>Vishwaksen Pujala</h1>
       <div class="hero__lower">
         <div class="hero__lower-text">
-          <p class="hero__tagline">I build the systems that keep a startup running: <span class="accent">backend, data, infrastructure, full-stack and AI.</span></p>
-          <p class="hero__intro">Computer Science graduate from IIIT Sri City, currently shipping production software at an early-stage AI company. I take whatever part of the stack the problem needs.</p>
+          <p class="hero__tagline" data-lines>I build the systems that keep a startup running: <span class="accent">backend, data, infrastructure, full-stack and AI.</span></p>
+          <p class="hero__intro" data-lines>Computer Science graduate from IIIT Sri City, currently shipping production software at an early-stage AI company. I take whatever part of the stack the problem needs.</p>
           <div class="hero__cta">
-            <a href="#work" class="btn btn--primary">View my work</a>
-            <a href="resume.pdf" target="_blank" rel="noopener" class="btn btn--ghost">Download résumé</a>
+            <a href="#work" class="btn btn--primary" data-magnet data-cursor="hide">View my work</a>
+            <a href="resume.pdf" target="_blank" rel="noopener" class="btn btn--ghost" data-magnet data-cursor="hide">Download résumé</a>
           </div>
           <div class="hero__socials">
-            <a href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener">GitHub</a>
-            <a href="https://www.linkedin.com/in/vishwaksenpujala" target="_blank" rel="noopener">LinkedIn</a>
-            <a href="mailto:vishwaksenpujala@gmail.com">Email</a>
+            <a href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener" data-cursor>GitHub</a>
+            <a href="https://www.linkedin.com/in/vishwaksenpujala" target="_blank" rel="noopener" data-cursor>LinkedIn</a>
+            <a href="mailto:vishwaksenpujala@gmail.com" data-cursor>Email</a>
           </div>
         </div>
-        <div class="hero__photo-wrap">
+        <div class="hero__photo-wrap" data-tilt data-tilt-max="10">
+          <span class="hero__photo-frame" aria-hidden="true"></span>
           <img class="hero__photo" src="assets/vishwak.jpg" width="720" height="720" alt="Vishwaksen Pujala" />
         </div>
       </div>
+      <div class="hero__scroll" aria-hidden="true"><span></span>scroll to rebuild</div>
     </section>
 
     <!-- ============ ABOUT ============ -->
-    <section class="section" id="about">
+    <section class="section" id="about" data-scene="about">
+      <span class="ghost" aria-hidden="true" data-parallax="0.12">01</span>
       <div class="sec-head">
         <span class="sec-num">01</span>
-        <h2 class="sec-title">About</h2>
+        <h2 class="sec-title" data-lines>About</h2>
         <span class="sec-rule"></span>
       </div>
       <div class="about">
         <div class="about__text">
-          <p>I'm a Computer Science graduate from <strong>IIIT Sri City</strong> (CGPA 8.5/10), currently working as an engineer at an early-stage consumer-AI startup in Gurgaon.</p>
-          <p>At a small company you don't get one job title, you get all of them. Over the past year I've shipped <strong>backend services</strong>, the <strong>data &amp; analytics</strong> behind the company's metrics, <strong>cloud infrastructure</strong>, internal <strong>full-stack</strong> tools, and a fleet of <strong>production AI agents</strong>, picking up whichever hat the week demanded.</p>
-          <p>What I care about most is software that stays <em>correct under load</em>: idempotent handlers, dead-letter queues, retry-aware ledgers, traced and evaluated agents. I'm looking for full-time <strong>Software / Backend / AI Engineer</strong> roles.</p>
+          <p data-lines>I'm a Computer Science graduate from <strong>IIIT Sri City</strong> (CGPA 8.5/10), currently working as an engineer at an early-stage consumer-AI startup in Gurgaon.</p>
+          <p data-lines>At a small company you don't get one job title, you get all of them. Over the past year I've shipped <strong>backend services</strong>, the <strong>data &amp; analytics</strong> behind the company's metrics, <strong>cloud infrastructure</strong>, internal <strong>full-stack</strong> tools, and a fleet of <strong>production AI agents</strong>, picking up whichever hat the week demanded.</p>
+          <p data-lines>What I care about most is software that stays <em>correct under load</em>: idempotent handlers, dead-letter queues, retry-aware ledgers, traced and evaluated agents. I'm looking for full-time <strong>Software / Backend / AI Engineer</strong> roles.</p>
           <ul class="about__facts">
             <li><span>Education</span> B.Tech CSE · IIIT Sri City · 2022–26</li>
             <li><span>Based in</span> Gurgaon, India</li>
@@ -82,54 +121,58 @@
             <li><span>Research</span> ChromaGene (gene-expression transformer)</li>
           </ul>
         </div>
-        <aside class="about__side">
+        <aside class="about__side" data-tilt data-tilt-max="8">
           <div class="about__mono">VP</div>
           <p class="about__name">Vishwaksen Pujala</p>
           <p class="about__role">Software Engineer</p>
-          <a class="about__resume" href="resume.pdf" target="_blank" rel="noopener">→ Read my résumé</a>
+          <a class="about__resume" href="resume.pdf" target="_blank" rel="noopener" data-cursor>→ Read my résumé</a>
         </aside>
       </div>
     </section>
 
     <!-- ============ WHAT I DO ============ -->
-    <section class="section" id="roles">
+    <section class="section" id="roles" data-scene="roles">
+      <span class="ghost" aria-hidden="true" data-parallax="0.12">02</span>
       <div class="sec-head">
         <span class="sec-num">02</span>
-        <h2 class="sec-title">What I do</h2>
+        <h2 class="sec-title" data-lines>What I do</h2>
         <span class="sec-rule"></span>
       </div>
       <div class="roles" id="roles-list"></div>
     </section>
 
     <!-- ============ SKILLS ============ -->
-    <section class="section" id="skills">
+    <section class="section" id="skills" data-scene="skills">
+      <span class="ghost" aria-hidden="true" data-parallax="0.12">03</span>
       <div class="sec-head">
         <span class="sec-num">03</span>
-        <h2 class="sec-title">Toolbox</h2>
+        <h2 class="sec-title" data-lines>Toolbox</h2>
         <span class="sec-rule"></span>
       </div>
       <div class="skills" id="skills-list"></div>
     </section>
 
     <!-- ============ WORK ============ -->
-    <section class="section" id="work">
+    <section class="section" id="work" data-scene="work">
+      <span class="ghost" aria-hidden="true" data-parallax="0.12">04</span>
       <div class="sec-head">
         <span class="sec-num">04</span>
-        <h2 class="sec-title">Selected work</h2>
+        <h2 class="sec-title" data-lines>Selected work</h2>
         <span class="sec-rule"></span>
-        <a class="sec-link" href="https://github.com/Vishwaksen0124?tab=repositories" target="_blank" rel="noopener">All repos ↗</a>
+        <a class="sec-link" href="https://github.com/Vishwaksen0124?tab=repositories" target="_blank" rel="noopener" data-cursor>All repos ↗</a>
       </div>
       <div class="work" id="work-list"></div>
     </section>
 
     <!-- ============ EXPERIENCE ============ -->
-    <section class="section" id="experience">
+    <section class="section" id="experience" data-scene="experience">
+      <span class="ghost" aria-hidden="true" data-parallax="0.12">05</span>
       <div class="sec-head">
         <span class="sec-num">05</span>
-        <h2 class="sec-title">Experience</h2>
+        <h2 class="sec-title" data-lines>Experience</h2>
         <span class="sec-rule"></span>
       </div>
-      <article class="exp">
+      <article class="exp" data-tilt data-tilt-max="4">
         <div class="exp__head">
           <div>
             <h3 class="exp__role">Software Engineer</h3>
@@ -148,13 +191,14 @@
     </section>
 
     <!-- ============ EDUCATION ============ -->
-    <section class="section" id="education">
+    <section class="section" id="education" data-scene="education">
+      <span class="ghost" aria-hidden="true" data-parallax="0.12">06</span>
       <div class="sec-head">
         <span class="sec-num">06</span>
-        <h2 class="sec-title">Education</h2>
+        <h2 class="sec-title" data-lines>Education</h2>
         <span class="sec-rule"></span>
       </div>
-      <article class="exp">
+      <article class="exp" data-tilt data-tilt-max="4">
         <div class="exp__head">
           <div>
             <h3 class="exp__role">B.Tech · Computer Science &amp; Engineering</h3>
@@ -170,27 +214,30 @@
     </section>
 
     <!-- ============ CONTACT ============ -->
-    <section class="section section--contact" id="contact">
+    <section class="section section--contact" id="contact" data-scene="contact">
+      <span class="ghost" aria-hidden="true" data-parallax="0.12">07</span>
       <div class="sec-head">
         <span class="sec-num">07</span>
-        <h2 class="sec-title">Contact</h2>
+        <h2 class="sec-title" data-lines>Contact</h2>
         <span class="sec-rule"></span>
       </div>
-      <p class="contact__lead">I'm open to full-time Software / Backend / AI Engineer roles and interesting collaborations. The fastest way to reach me is email, and I'll get back to you.</p>
-      <a class="contact__email" href="mailto:vishwaksenpujala@gmail.com">vishwaksenpujala@gmail.com</a>
+      <p class="contact__lead" data-lines>I'm open to full-time Software / Backend / AI Engineer roles and interesting collaborations. The fastest way to reach me is email, and I'll get back to you.</p>
+      <a class="contact__email" href="mailto:vishwaksenpujala@gmail.com" data-split data-cursor="hide">vishwaksenpujala@gmail.com</a>
       <div class="contact__row">
-        <a href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener">GitHub ↗</a>
-        <a href="https://www.linkedin.com/in/vishwaksenpujala" target="_blank" rel="noopener">LinkedIn ↗</a>
-        <a href="tel:+918790265280">+91 87902 65280</a>
+        <a href="https://github.com/Vishwaksen0124" target="_blank" rel="noopener" data-cursor>GitHub ↗</a>
+        <a href="https://www.linkedin.com/in/vishwaksenpujala" target="_blank" rel="noopener" data-cursor>LinkedIn ↗</a>
+        <a href="tel:+918790265280" data-cursor>+91 87902 65280</a>
       </div>
     </section>
   </main>
 
   <footer class="foot">
     <span>© <span id="year"></span> Vishwaksen Pujala</span>
-    <span>Hand-coded · GitHub Pages</span>
+    <span>Hand-coded · WebGL · GitHub Pages</span>
   </footer>
+  </div><!-- /#smooth -->
 
   <script src="script.js"></script>
+  <script type="module" src="scene.js"></script>
 </body>
 </html>
