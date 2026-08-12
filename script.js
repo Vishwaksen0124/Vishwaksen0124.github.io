@@ -32,34 +32,27 @@ const ROLES = [
 ];
 
 const WORKS = [
-  { title: "Creative Writing Studio", tag: "GenAI · live", link: "https://creativewritingstudio.streamlit.app",
-    desc: "A live multi-agent writing platform where Plot, Dialogue & Editor agents co-author long-form stories with FAISS retrieval over running context and Mistral generation, served publicly on Streamlit.",
-    stack: "LangChain · Mistral · FAISS · Streamlit" },
-  { title: "LoveStream", tag: "Realtime", link: "https://github.com/Vishwaksen0124/lovestream",
-    desc: "Low-latency peer-to-peer video & screen-share with system audio and live presence, over WebRTC media transport with Supabase Realtime presence sync.",
-    stack: "Next.js 16 · WebRTC · Supabase" },
   { title: "Planity", tag: "Full-stack", link: "https://github.com/Vishwaksen0124/Planity",
-    desc: "Role-based team task manager: subtasks, soft-delete/restore, real-time notifications, Redis caching, MongoDB Atlas, Docker Compose + CI/CD.",
-    stack: "React · Node.js · MongoDB · Redis" },
+    desc: "Role-based team task manager with 20 REST endpoints, 3-role RBAC, Redis caching, Swagger docs, and a GitHub Actions CI pipeline with 7 Vitest / Supertest suites.",
+    stack: "React · Node.js · MongoDB · Redis · Docker" },
   { title: "Image Stitching (RDISNet)", tag: "Computer vision", link: "https://github.com/Vishwaksen0124/image-stitching-rdisnet",
     desc: "Deep-learning image stitching with dilated residual encoders plus a transformer context-fusion module for robust, seam-free panoramas.",
     stack: "PyTorch · Transformers" },
-  { title: "ChromaGene", tag: "Research", link: "",
-    desc: "A transformer that infers cell-type-specific gene expression from ATAC-seq chromatin accessibility data.",
-    stack: "PyTorch · Genomics" },
+  { title: "Creative Writing Studio", tag: "GenAI · live", link: "https://creativewritingstudio.streamlit.app",
+    desc: "A live multi-agent writing platform where Plot, Dialogue & Editor agents co-author long-form stories with FAISS retrieval over running context and Mistral generation, served publicly on Streamlit.",
+    stack: "LangChain · Mistral · FAISS · Streamlit" },
   { title: "Résumé ↔ JD Analyzer", tag: "Tool", link: "https://github.com/Vishwaksen0124/Resume-Job-JD-analyzer",
     desc: "Scores a résumé against a job description, surfacing the gaps and keywords that matter for ATS screening.",
     stack: "Python · NLP · LLM" }
 ];
 
 const SKILLS = [
-  ["Languages", ["Python", "TypeScript", "JavaScript", "SQL", "Rust", "Bash"]],
-  ["Backend", ["FastAPI", "Node.js", "REST APIs", "WebSockets", "Pydantic"]],
-  ["AI / LLM", ["LangChain", "LangGraph", "LangSmith", "RAG", "OpenAI", "Anthropic", "PyTorch"]],
-  ["Distributed", ["Celery", "Redis", "AWS EventBridge", "SQS", "Idempotency", "DLQs"]],
-  ["Cloud & DevOps", ["AWS", "Azure", "Docker", "Terraform", "GitHub Actions"]],
-  ["Data", ["PostgreSQL", "MongoDB", "Pandas", "Grafana", "Cohort & Funnel"]],
-  ["Frontend", ["React", "Next.js", "Streamlit"]]
+  ["Languages", ["Python", "Java", "SQL"]],
+  ["AI / LLM", ["LangChain", "LangGraph", "RAG", "AI Agents", "Vector Databases"]],
+  ["Backend", ["FastAPI", "Node.js", "Express", "Celery", "Redis", "REST APIs", "WebSockets"]],
+  ["Frontend", ["React", "Next.js", "React Native / Expo"]],
+  ["Cloud & DevOps", ["AWS", "Azure Container Apps", "Docker", "Terraform", "GitHub Actions"]],
+  ["Observability", ["Grafana", "Sentry", "PostHog"]]
 ];
 
 /* ============================================================

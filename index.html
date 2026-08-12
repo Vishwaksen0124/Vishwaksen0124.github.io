@@ -111,8 +111,8 @@
       </div>
       <div class="about">
         <div class="about__text">
-          <p data-lines>I'm a Computer Science graduate from <strong>IIIT Sri City</strong> (CGPA 8.5/10), currently working as an engineer at an early-stage consumer-AI startup in Gurgaon.</p>
-          <p data-lines>At a small company you don't get one job title, you get all of them. Over the past year I've shipped <strong>backend services</strong>, the <strong>data &amp; analytics</strong> behind the company's metrics, <strong>cloud infrastructure</strong>, internal <strong>full-stack</strong> tools, and a fleet of <strong>production AI agents</strong>, picking up whichever hat the week demanded.</p>
+          <p data-lines>I'm a Computer Science graduate from <strong>IIIT Sri City</strong> (CGPA 8.42/10), currently working as an <strong>AI Engineer at Kookar AI</strong> in Gurgaon.</p>
+          <p data-lines>Got a <strong>PPO</strong> and moved from AI Product Analyst Intern to AI Engineer after shipping production systems across mobile, grocery ordering, voice editing, observability, and a fleet of production AI agents.</p>
           <p data-lines>What I care about most is software that stays <em>correct under load</em>: idempotent handlers, dead-letter queues, retry-aware ledgers, traced and evaluated agents. I'm looking for full-time <strong>Software / Backend / AI Engineer</strong> roles.</p>
           <ul class="about__facts">
             <li><span>Education</span> B.Tech CSE · IIIT Sri City · 2022–26</li>
@@ -175,17 +175,25 @@
       <article class="exp" data-tilt data-tilt-max="4">
         <div class="exp__head">
           <div>
-            <h3 class="exp__role">Software Engineer</h3>
-            <p class="exp__sub">Early-stage consumer-AI startup · Gurgaon, India</p>
+            <h3 class="exp__role">AI Product Analyst Intern → AI Engineer</h3>
+            <p class="exp__sub">Kookar AI · Gurgaon, India</p>
           </div>
-          <span class="exp__date">Jun 2025 — Present</span>
+          <span class="exp__date">Jul 2025 — Present</span>
         </div>
         <ul class="exp__points">
-          <li><strong>Backend.</strong> Built and own the core platform: FastAPI services, the order/agent backbone behind <strong>60+ orders/day across 6 partner platforms</strong>, and a distributed async pipeline on Celery, Redis, AWS EventBridge &amp; SQS routing thousands of events/day with idempotency, backoff and dead-letter queues.</li>
-          <li><strong>Data &amp; analytics.</strong> Built the analytics layer in SQL/PLpgSQL: the daily Northstar pipeline (GMV, WAU/MAU, churn-risk) auto-emailed to founders, 4 Grafana dashboards, and ad-hoc cohort/funnel analyses.</li>
-          <li><strong>AI.</strong> A Pydantic-typed, LangSmith-traced orchestration &amp; evaluation layer powering <strong>10+ LangGraph agents in production</strong>, with evaluators grading live runs across OpenAI / Anthropic / Mistral.</li>
-          <li><strong>DevOps &amp; full-stack.</strong> Cloud infra-as-code (Terraform on Azure), Docker &amp; GitHub Actions; React / Next.js operational dashboards consuming the services above.</li>
-          <li><strong>Ops.</strong> Monitoring, alerting and on-call: killed a recurring weekly on-call page by root-causing a silent browser-automation bug in the payment path, restoring alarm trust.</li>
+          <li>Received a <strong>PPO</strong> and was promoted from <strong>AI Product Analyst Intern to AI Engineer</strong> after shipping production AI systems used by active customer households.</li>
+          <li><strong>Shipped Kookar's consumer mobile app</strong> (React Native / Expo, Azure Container Apps) covering meal plans, grocery carts, inventory, and Razorpay wallet, live on <strong>App Store and Play Store</strong>.</li>
+          <li><strong>Designed meals and grocery agents</strong> that match edits against each household's dishes and items, reducing edit time and mis-match rate on production requests.</li>
+          <li><strong>Built voice editing</strong> so users can open meal plans or grocery carts and speak edits instead of typing long messages: voice is transcribed and a router agent picks the right agent to apply the change.</li>
+          <li><strong>Built grocery ordering orchestration</strong> across <strong>6 vendors</strong> (Zepto, Blinkit, BigBasket, Swiggy, Flipkart, Licious) at <strong>60+ orders/day</strong>, with payment capture and delivery tracking (FastAPI, Celery, Redis).</li>
+          <li><strong>Built order tracking</strong> after an order is placed: record ordered items, notify the customer, and update payment. Poll vendor APIs until delivery, record received items, update payment again, and send the final delivery confirmation.</li>
+          <li><strong>Built cross-vendor price comparison</strong> matching catalog items across 6 platforms to pick the cheapest cart, saving customers <strong>5–7%</strong> per order.</li>
+          <li><strong>Built a Chrome extension</strong> that injects cookies, local storage, and session storage from the server-side cart session into the operator's browser so ops can review the AI-built cart before checkout.</li>
+          <li><strong>Built a multi-agent WhatsApp recruiting pipeline</strong> (Node.js) covering resume analysis, question generation, and HITL interviews, screened <strong>500+ candidates</strong> and supported <strong>10 hires</strong>.</li>
+          <li><strong>Ran root-cause analysis on production agents</strong> using Sentry and LangSmith traces; diagnosed failure patterns per household and shipped fixes.</li>
+          <li><strong>Built per-house observability</strong> tracking meal plans, meal info, grocery carts, inventory, and on-time replies to customers and cooks for every active household.</li>
+          <li><strong>Set up agent observability</strong> for accuracy and stuck runs: scored responses against defined metrics, routed failures to POCs to close tickets, and built <strong>Grafana dashboards</strong> for per-agent accuracy and performance by metric.</li>
+          <li><strong>Automated daily business reports</strong> on revenue, active users, and churn risk for founders and ops.</li>
         </ul>
       </article>
     </section>
@@ -202,13 +210,13 @@
         <div class="exp__head">
           <div>
             <h3 class="exp__role">B.Tech · Computer Science &amp; Engineering</h3>
-            <p class="exp__sub">Indian Institute of Information Technology, Sri City · CGPA 8.5 / 10</p>
+            <p class="exp__sub">Indian Institute of Information Technology, Sri City · CGPA 8.42 / 10</p>
           </div>
           <span class="exp__date">2022 — 2026</span>
         </div>
         <ul class="exp__points">
           <li><strong>Relevant coursework.</strong> Operating Systems, DBMS, Computer Networks, Distributed Systems, OOP, Cloud Computing, AI / ML.</li>
-          <li><strong>Before college.</strong> JEE Mains 2022: 95.65 percentile · Class XII (AP Board): 97%.</li>
+          <li><strong>Before college.</strong> JEE Main 2022: <strong>96 percentile</strong> (top 4% nationally) · Class XII (AP Board): 97% · Class X: 98.67%.</li>
         </ul>
       </article>
     </section>
